@@ -5,7 +5,7 @@ def show_main(request):
         'npm' : '2306208855',
         'name': 'Muhammad Afwan Hafizh',
         'class': 'PBP F',
-        'app_name': 'Amesoup',
+        'app_name': 'Ameloops',
     }
 
     return render(request, "main.html", context)
@@ -15,7 +15,7 @@ def account_page(request):
         'npm' : '2306208855',
         'name': 'Muhammad Afwan Hafizh',
         'class': 'PBP F',
-        'app_name': 'Amesoup',
+        'app_name': 'Ameloops',
     }
     return render(request, 'account.html', context)
 
