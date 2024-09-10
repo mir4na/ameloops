@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/0ef6d5cf-68f4-49db-a090-c45973f037c1)# Tugas 2: Pengenalan Aplikasi Django dan Model-View-Template (MVT) pada Django
+# Tugas 2: Pengenalan Aplikasi Django dan Model-View-Template (MVT) pada Django
 
 - Nama: Muhammad Afwan Hafizh
 - NPM: 2306208855
