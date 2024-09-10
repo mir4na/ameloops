@@ -1,10 +1,11 @@
-# Tugas 2: Pengenalan Aplikasi Django dan Model-View-Template (MVT) pada Django
+![image](https://github.com/user-attachments/assets/0ef6d5cf-68f4-49db-a090-c45973f037c1)# Tugas 2: Pengenalan Aplikasi Django dan Model-View-Template (MVT) pada Django
 
 - Nama: Muhammad Afwan Hafizh
 - NPM: 2306208855
 - Kelas: PBP-F
 
-Link deploy: [masih belum bisa diakses karena pws rungkad t_t](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
+- Link deploy: [masih belum bisa diakses karena pws rungkad t_t](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
+- another pws problem = ![image](https://github.com/user-attachments/assets/acad7458-ce64-4963-8ba2-25cf918436c6)
 
 Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-poin dalam checklist:
 
@@ -72,9 +73,70 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
    2. Setelah membuat app main, maka tambahkan string ```'main'``` pada ```INSTALLED_APPS``` di ```settings.py``` pada direktori proyek. Fungsi pada penambahan string ```'main'``` pada ```INSTALLED_APPS``` berfungsi untuk menambahkan aplikasi pada yaitu ```'main'``` pada daftar aplikasi di proyek django.
 
 ## Melakukan routing pada proyek agar dapat menjalankan aplikasi main.
+   1. Pergi ke ```urls.py``` pada direktori proyek.
+   2. Ketika saya membuat proyek django baru dengan command ```django-admin startproject ameloops .```, saya mendapatkan code default pada ```urls.py``` seperti berikut.
+      ```
+      from django.contrib import admin
+      from django.urls import path
+      
+      urlpatterns = [
+          path("admin/", admin.site.urls),
+      ]
+      ```
+      Secara garis besar, code ini mengatur URL routing dasar untuk admin dan dapat diperluas dengan URL lain sesuai kebutuhan.
+      
+   3. Tambahkan URL ```main``` dengan menambahkan ```include``` pada ```from django.urls import path``` dan ```path('', include('main.urls'))``` pada ```urlpatterns```.
+      ```
+      from django.contrib import admin
+      from django.urls import path, include
+      
+      urlpatterns = [
+          path("admin/", admin.site.urls),
+          path('', include('main.urls'))
+      ]
+      ```
+      Fungsi ```include``` berfungsi untuk menambahkan path pada aplikasi sehingga dengan ```path('', include('main.urls'))``` routing URL pada aplikasi main dapat terhubung ke proyek django.
+
+## Membuat model pada aplikasi main dengan nama Product dan memiliki atribut wajib seperti name, price, description.
+   1. Pergi ke ```models.py``` pada direktori main.
+   2. Di sini saya berencana untuk membuat atribut name, price, description, stock, dan category.
+   3. Berikut code yang saya buat
+      ```
+      from django.db import models
+
+      class Product(models.Model):
+          name = models.CharField(max_length=255)
+          price = models.IntegerField()
+          description = models.TextField()
+          stock = models.PositiveIntegerField(default=0)
+          category = models.CharField(max_length=50, blank=True, null=True)
+      
+          def __str__(self):
+              return self.name
+      ```
+      - ```from django.db import models```, fungsinya mengimpor modul models dari django.db, yang berisi berbagai jenis field dan fungsionalitas yang digunakan untuk mendefinisikan model dalam django.
+      - ```name = models.CharField(max_length=255)```, fungsinya untuk mendefinisikan field name sebagai CharField maksimal 255 karakter untuk menyimpan teks pendek seperti halnya nama produk.
+      - ```price = models.IntegerField()```, fungsinya untuk mendefinisikan field price sebagai IntegerField untuk menyimpan nilai integer seperti halnya harga produk.
+      - ```description = models.TextField()```, fungsinya untuk mendefinisikan field description sebagai TextField untuk menyimpan teks panjang berupa deskripsi produk.
+      - ```stock = models.PositiveIntegerField(default=0)```, fungsinya untuk mendefinisikan field stock sebagai PositiveIntegerField dengan nilai default 0, artinya menyimpan integer positif karena stok produk tidak mungkin kurang dari nol.
+      - ```category = models.CharField(max_length=50, blank=True, null=True)```, berfungsi untuk mendefinisikan field category sebagai CharField maksimal 50 karakter dengan nilai default blank pada form dan NULL di database, yang digunakan untuk menyimpan kategori produk.
+
+   4. Setelah saya membuat perubahan baru pada ```models.py``` seperti menambahkan atribut, maka saya membuat migrasi model dengan menjalankan command berikut
+      ```
+      python manage.py makemigrations
+      ```
+      Command ini membuat file migrasi berdasarkan perubahan yang dibuat pada model di models.py. Migrasi adalah kumpulan instruksi yang django gunakan untuk mengubah struktur database sesuai dengan model yang telah didefinisikan atau dimodifikasi.
+
+   5. Setelah membuat migrasi model, maka jalankan command berikut
+      ```
+      python manage.py migrate
+      ```
+      Command ini menjalankan migrasi yang telah dibuat dan mengaplikasikan perubahan ke database. Ini akan mengubah struktur tabel sesuai dengan model yang didefinisikan dalam file migrasi.
+
+## Membuat sebuah fungsi pada views.py untuk dikembalikan ke dalam sebuah template HTML yang menampilkan nama aplikasi serta nama dan kelas kamu.
    1. Pergi ke ```views.py``` yang ada pada direktori main.
       
-   2. Lalu, buat code seperti berikut
+   2. Lalu, buat code berikut
       ```
       from django.shortcuts import render
 
@@ -91,10 +153,25 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       - ```def show_main(request):``` berfungsi dalam mendefinisikan fungsi view ```show_main``` yang menerima satu argumen yaitu request.
       - ```context = {...}```, konteks data yang dibuat dalam tipe data dictionary
       - ```return render(request, "main.html", context)```, berfungsi untuk memberikan konteks dari request HTTP, me-render template ```main.html```, dan memberikan konteks data yang telah diberikan pada code.
-  
-   3. Setelah membuat code pada ```views.py```, maka buat berkas ```urls.py``` pada direktori main.
 
-   4. Lalu, setup routing URL ```main``` dengan buat code seperti berikut
+   3. Sebelumnya, saya telah membuat file ```templates\main.html``` pada direktori main, berikut potongan HTML dalam implementasinya
+      ```
+      ...
+      <h1 class="text-center mb-4">Welcome to {{ app_name }}!</h1>
+      <p class="text">Hello! I am {{ name }} from {{ class }}. A newcomer in computer science field.</p>
+      ...
+      ```
+      Maka, output yang muncul pada HTML adalah
+      ```
+      Welcome to Ameloops!
+      Hello! I am Muhammad Afwan Hafizh from PBP F. A newcomer in computer science field.
+      ```
+      Ini dapat terjadi karena adanya rendering template yang telah dilakukan oleh code pada file ```views.py```. Jadi, value dari variabel yang disisipkan dalam HTML akan menampilkan konteks dari data yang telah diatur di ```views.py```.
+
+## Membuat sebuah routing pada urls.py aplikasi main untuk memetakan fungsi yang telah dibuat pada views.py.
+   1. Setelah membuat code pada ```views.py```, maka buat berkas ```urls.py``` pada direktori main.
+
+   2. Lalu, setup routing URL ```main``` dengan buat code seperti berikut
       ```
       from django.urls import path
       from . import views
@@ -107,29 +184,26 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       ```
       Secara garis besar, code ini mengartikan apabila user mengunjungi URL yang sesuai (URL root dari aplikasi main), maka django akan mencocokkan URL tersebut dengan pola yang ada di urlpatterns. URL root ('') akan cocok dengan path('', views.show_main, name='show_main'), sehingga django akan memanggil fungsi ```show_main``` dari ```views.py``` untuk menangani request tersebut.
 
-   5. Setelah setup routing URL ```main```, sekarang setup routing URL proyek dengan pergi ke ```urls.py``` pada direktori proyek.
-   6. Ketika saya membuat proyek django baru dengan command ```django-admin startproject ameloops .```, saya mendapatkan code default pada ```urls.py``` seperti berikut.
+## Melakukan deployment ke PWS terhadap aplikasi yang sudah dibuat sehingga nantinya dapat diakses oleh teman-temanmu melalui Internet.
+   1. Buka Pacil Web Service melalui link ini ```https://pbp.cs.ui.ac.id/```.
+   2. Apabila belum memiliki akun, maka dapat melakukan register akun terlebih dahulu. Namun, karena saya sudah membuat akun sebelumnya, maka saya dapat langsung login pada PWS.
+   3. Buat proyek baru dengan memilih ```New Project``` pada PWS.
+   4. Isi nama proyek pada field yang diberikan.
+   5. Setelah membuat proyek baru, maka akan diberikan password credential yang hanya dapat dilihat sekali saja. Jadi, simpan credential tersebut dengan baik.
+   6. Lalu, pergi ke ```settings.py``` pada direktori proyek, tambahkan URL ```muhammad-afwan-ameloops.pbp.cs.ui.ac.id``` pada ```ALLOWED_HOSTS``` untuk melakukan deploy pada PWS.
+   7. Lakukan command berikut ini untuk menambahkan remote repository baru ke dalam repository git lokal.
       ```
-      from django.contrib import admin
-      from django.urls import path
-      
-      urlpatterns = [
-          path("admin/", admin.site.urls),
-      ]
+      git remote add pws http://pbp.cs.ui.ac.id/muhammad.afwan/ameloops
       ```
-      Secara garis besar, code ini mengatur URL routing dasar untuk admin dan dapat diperluas dengan URL lain sesuai kebutuhan.
-      
-   7. Tambahkan URL ```main``` dengan menambahkan ```include``` pada ```from django.urls import path``` dan ```path('', include('main.urls'))``` pada ```urlpatterns```.
+      (Pada kasus saya, ketika melakukan remote add tidak dimintai credentialsnya padahal seharusnya dimintai credentialsnya. Sepertinya ini karena adanya faktor dari PWS)
+   8. Cek branch dengan ```git branch```. Apabila sedang di branch ```master```, maka dapat langsung melakukan push dengan command
       ```
-      from django.contrib import admin
-      from django.urls import path, include
-      
-      urlpatterns = [
-          path("admin/", admin.site.urls),
-          path('', include('main.urls'))
-      ]
+      git push pws master
       ```
-      Fungsi ```include``` berfungsi untuk menambahkan path pada aplikasi sehingga dengan ```path('', include('main.urls'))``` routing URL pada aplikasi main dapat terhubung ke proyek django.
+      Namun, apabila sedang di branch ```main```, maka dapat melakukan push dengan command
+      ```
+      git push pws main:master
+      ```
+   9. Ketika sudah melakukan push, pastikan tertulis status ```sucessful``` pada log proyeknya sehingga menandakan bahwa deploy telah berhasil.
 
-## Membuat model pada aplikasi main dengan nama Product dan memiliki atribut wajib seperti name, price, description.
-   
+## Buatlah bagan yang berisi request client ke web aplikasi berbasis Django beserta responnya dan jelaskan pada bagan tersebut kaitan antara urls.py, views.py, models.py, dan berkas html.
