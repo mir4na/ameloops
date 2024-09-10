@@ -1,26 +1,56 @@
-from django.test import TestCase, Client
-from django.utils import timezone
-from .models import MoodEntry
+from django.test import TestCase
+from .models import Product
 
-class mainTest(TestCase):
-    def test_main_url_is_exist(self):
-        response = Client().get('')
-        self.assertEqual(response.status_code, 200)
+class ProductModelTest(TestCase):
 
-    def test_main_using_main_template(self):
-        response = Client().get('')
-        self.assertTemplateUsed(response, 'main.html')
-
-    def test_nonexistent_page(self):
-        response = Client().get('/skibidi/')
-        self.assertEqual(response.status_code, 404)
-
-    def test_strong_mood_user(self):
-        now = timezone.now()
-        mood = MoodEntry.objects.create(
-          mood="LUMAYAN SENANG",
-          time = now,
-          feelings = "senang sih, cuman tadi baju aku basah kena hujan :(",
-          mood_intensity = 8,
+    def setUp(self):
+        # This method will run before each test
+        self.product = Product.objects.create(
+            name="Test Product",
+            price=1000,
+            description="This is a test product",
+            stock=10,
+            category="Electronics",
         )
-        self.assertTrue(mood.is_mood_strong)
+
+    def test_product_creation(self):
+        # Test if the product is created correctly
+        product = self.product
+        self.assertEqual(product.name, "Test Product")
+        self.assertEqual(product.price, 1000)
+        self.assertEqual(product.description, "This is a test product")
+        self.assertEqual(product.stock, 10)
+        self.assertEqual(product.category, "Electronics")
+
+    def test_product_string_representation(self):
+        # Test the string representation of the product
+        product = self.product
+        self.assertEqual(str(product), "Test Product")
+
+    def test_stock_default_value(self):
+        # Test that the default stock value is set to 0
+        new_product = Product.objects.create(
+            name="New Product",
+            price=500,
+            description="This is another test product",
+        )
+        self.assertEqual(new_product.stock, 0)
+
+    def test_blank_and_null_category(self):
+        # Test that a product can have a blank or null category
+        product_with_blank_category = Product.objects.create(
+            name="Blank Category Product",
+            price=1500,
+            description="Product with blank category",
+            stock=5,
+            category=""
+        )
+        product_with_null_category = Product.objects.create(
+            name="Null Category Product",
+            price=2000,
+            description="Product with null category",
+            stock=5,
+            category=None
+        )
+        self.assertEqual(product_with_blank_category.category, "")
+        self.assertIsNone(product_with_null_category.category)
