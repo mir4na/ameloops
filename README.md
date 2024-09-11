@@ -207,7 +207,13 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
 
 ## Buatlah bagan yang berisi request client ke web aplikasi berbasis Django beserta responnya dan jelaskan pada bagan tersebut kaitan antara urls.py, views.py, models.py, dan berkas html.
 ![image](https://github.com/user-attachments/assets/b78beffe-f004-4e9a-83c7-619bed86bd19)
-
+Alur penjelasan bagan:
+1. ```Client``` akan mengirim HTTP request ke server django.
+2. Hasil request tersebut akan dicocokkan dengan pola URL pada ```urls.py``` yang apabila ditemukan kecocokan, maka akan diteruskan fungsi yang sesuai pada ```views.py```
+3. ```views.py``` akan memproses request. Apabila ada data yang diperlukan, maka akan dilakukan proses pengambilan data dengan query tertentu pada ```models.py```.
+4. Apabila ada proses pengambilan data, maka ```models.py``` akan memproses query dari ```views.py``` dan mengembalikan data tersebut ke ```views.py```.
+5. Context value dari ```views.py``` akan disispkan pada HTML. HTML akan di-render dan dikembalikan sebagai HTTP response.
+6. HTTP response yang telah di-render akan dikembalikan kepada ```client```.
 
 ## Jelaskan fungsi git dalam pengembangan perangkat lunak!
 - Version control. Git dapat melacak perubahan pada suatu code sehingga developer dapat melihat history dalam perubahan code atau kembali ke versi-versi sebelumnya apabila diperlukan.
