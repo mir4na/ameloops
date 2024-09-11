@@ -153,7 +153,7 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       - ```context = {...}```, konteks data yang dibuat dalam tipe data dictionary
       - ```return render(request, "main.html", context)```, berfungsi untuk memberikan konteks dari request HTTP, me-render template ```main.html```, dan memberikan konteks data yang telah diberikan pada code.
 
-   3. Sebelumnya, saya telah membuat file ```templates\main.html``` pada direktori main, berikut potongan HTML dalam implementasinya
+   3. Sebelumnya, saya telah membuat file ```\templates\main.html``` pada direktori main, berikut potongan HTML dalam implementasinya
       ```
       ...
       <h1 class="text-center mb-4">Welcome to {{ app_name }}!</h1>
