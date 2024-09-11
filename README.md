@@ -203,6 +203,12 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       ```
       git push pws main:master
       ```
-   9. Ketika sudah melakukan push, pastikan tertulis status ```sucessful``` pada log proyeknya sehingga menandakan bahwa deploy telah berhasil.
+   9. Ketika sudah melakukan push, pastikan tertulis status ```succesful``` pada log proyeknya sehingga menandakan bahwa deploy telah berhasil.
 
 ## Buatlah bagan yang berisi request client ke web aplikasi berbasis Django beserta responnya dan jelaskan pada bagan tersebut kaitan antara urls.py, views.py, models.py, dan berkas html.
+
+## Jelaskan fungsi git dalam pengembangan perangkat lunak!
+
+## Menurut Anda, dari semua framework yang ada, mengapa framework Django dijadikan permulaan pembelajaran pengembangan perangkat lunak?
+
+## Mengapa model pada Django disebut sebagai ORM?
