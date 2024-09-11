@@ -210,5 +210,35 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
 ## Jelaskan fungsi git dalam pengembangan perangkat lunak!
 
 ## Menurut Anda, dari semua framework yang ada, mengapa framework Django dijadikan permulaan pembelajaran pengembangan perangkat lunak?
+Menurut saya, framework django ini lumayan "newbie friendly" karena di dalamnya sudah tersedia fitur-fitur secara default yang dapat saya manfaatkan. Adanya konsep MVT (Model-View-Template) juga sangat membantu dan mudah untuk dipahami bagi orang yang baru mulai belajar pengembangan software. Selain itu, framework django juga memiliki keamanan bawaan pada banyak aspek, salah satunya dengan adanya konsep ORM (Object-Relation Mapping) sehingga dapat meminimalisir terjadinya risiko dari pihak yang ingin mengambil data user dengan teknik SQL Injection.
 
 ## Mengapa model pada Django disebut sebagai ORM?
+Secara garis besar, konsep ORM (Object-Relation Mapping) pada framework django dapat memudahkan developer dalam pengembangan proyeknya karena developer dapat berinteraksi dengan database melalui objek bahasa pemrograman tanpa harus membuat query SQL secara langsung. Selain itu, developer dapat melakukan operasi CRUD (Copy, Read, Update, Delete) dengan menggunakan bahasa pemrograman python tanpa perlu memikirkan detail mengenai implementasi databasenya, berikut contohnya:
+
+```
+from django.db import models
+
+class Book(models.Model):
+    title = models.CharField(max_length=150)
+    author = models.CharField(max_length=150)
+    
+    def __str__(self):
+        return self.title
+
+# Membuat buku
+new_book = Book(title="Metamorphosis", author="Franz Kafka")
+new_book.save()
+
+# Mengambil query buku dengan judul tertentu
+all_books = Book.objects.all()
+django_books = Book.objects.filter(title__contains="Metamorph")
+
+# Melakukan update pada judul buku
+book_to_update = Book.objects.get(id=1)
+book_to_update.title = "ubah judul"
+book_to_update.save()
+
+# Menghapus buku
+book_to_delete = Book.objects.get(id=2)
+book_to_delete.delete()
+```
