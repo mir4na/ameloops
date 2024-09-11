@@ -4,8 +4,7 @@
 - NPM: 2306208855
 - Kelas: PBP-F
 
-- Link deploy: [masih belum bisa diakses karena pws rungkad t_t](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
-- another pws problem = ![image](https://github.com/user-attachments/assets/acad7458-ce64-4963-8ba2-25cf918436c6)
+- Link deploy: (masih belum bisa diakses karena pws rungkad t_t)
 
 Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-poin dalam checklist:
 
