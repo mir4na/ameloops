@@ -4,7 +4,6 @@ from .models import Product
 class ProductModelTest(TestCase):
 
     def setUp(self):
-        # This method will run before each test
         self.product = Product.objects.create(
             name="Test Product",
             price=1000,
@@ -14,7 +13,6 @@ class ProductModelTest(TestCase):
         )
 
     def test_product_creation(self):
-        # Test if the product is created correctly
         product = self.product
         self.assertEqual(product.name, "Test Product")
         self.assertEqual(product.price, 1000)
@@ -23,12 +21,10 @@ class ProductModelTest(TestCase):
         self.assertEqual(product.category, "Electronics")
 
     def test_product_string_representation(self):
-        # Test the string representation of the product
         product = self.product
         self.assertEqual(str(product), "Test Product")
 
     def test_stock_default_value(self):
-        # Test that the default stock value is set to 0
         new_product = Product.objects.create(
             name="New Product",
             price=500,
@@ -37,7 +33,6 @@ class ProductModelTest(TestCase):
         self.assertEqual(new_product.stock, 0)
 
     def test_blank_and_null_category(self):
-        # Test that a product can have a blank or null category
         product_with_blank_category = Product.objects.create(
             name="Blank Category Product",
             price=1500,
