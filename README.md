@@ -170,7 +170,7 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
 ## Membuat sebuah routing pada urls.py aplikasi main untuk memetakan fungsi yang telah dibuat pada views.py.
    1. Setelah membuat code pada ```views.py```, maka buat berkas ```urls.py``` pada direktori main.
 
-   2. Lalu, setup routing URL ```main``` dengan buat code seperti berikut
+   2. Lalu, setup routing URL ```main``` pada ```urls.py``` dengan buat code seperti berikut
       ```
       from django.urls import path
       from . import views
