@@ -51,7 +51,7 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       
    5. Apabila instalasi sudah selesai, maka buat proyek djangonya. Proyek saya bernama "ameloops" maka commandnya
       ```
-      django-admin startproject ameloots .
+      django-admin startproject ameloops .
       ```
       
    6. Setting konfigurasi pada proyek yang baru dibangun. Tambahkan string ```localhost``` dan ```127.0.0.1``` pada ```ALLOWED_HOSTS``` yang terletak pada ```settings.py``` dalam direktori dengan nama proyek yang sebelumnya dibuat.
@@ -67,7 +67,7 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       ```
       python manage.py startapp main
       ```
-      Berbeda dengan command ```django-admin startproject ameloots .``` yang menjadi kerangka utama dan melakukan konfigurasi yang diperlukan dalam menjalankan django, command ```python manage.py startapp main``` akan membuat app baru yang akan berfokus pada kumpulan fitur tertentu seperti shop, blog, dan lain-lain.
+      Berbeda dengan command ```django-admin startproject ameloops .``` yang menjadi kerangka utama dan melakukan konfigurasi yang diperlukan dalam menjalankan django, command ```python manage.py startapp main``` akan membuat app baru yang akan berfokus pada kumpulan fitur tertentu seperti shop, blog, dan lain-lain.
 
    2. Setelah membuat app main, maka tambahkan string ```'main'``` pada ```INSTALLED_APPS``` di ```settings.py``` pada direktori proyek. Fungsi pada penambahan string ```'main'``` pada ```INSTALLED_APPS``` berfungsi untuk menambahkan aplikasi pada yaitu ```'main'``` pada daftar aplikasi di proyek django.
 
