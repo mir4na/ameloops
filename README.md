@@ -206,11 +206,19 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
    9. Ketika sudah melakukan push, pastikan tertulis status ```succesful``` pada log proyeknya sehingga menandakan bahwa deploy telah berhasil.
 
 ## Buatlah bagan yang berisi request client ke web aplikasi berbasis Django beserta responnya dan jelaskan pada bagan tersebut kaitan antara urls.py, views.py, models.py, dan berkas html.
+![image](https://github.com/user-attachments/assets/b78beffe-f004-4e9a-83c7-619bed86bd19)
+
 
 ## Jelaskan fungsi git dalam pengembangan perangkat lunak!
+- Version control. Git dapat melacak perubahan pada suatu code sehingga developer dapat melihat history dalam perubahan code atau kembali ke versi-versi sebelumnya apabila diperlukan.
+- Terdapat fitur branching dan merging. Branching berfungsi apabila developer ingin mengembangkan fitur atau bereksperimen dengan branch baru. Merging berfungsi untuk menyatukan keseluruhan code pada branch utama dari hasil branch-branch lain.
+- Kemudahan dalam berkolaborasi dalam tim karena didukung oleh fitur-fitur yang ada.
+- Dokumentasi perubahan code melalui fitur ```commit message``` atau ```pull request```.
+- Kemudahan dalam melacak bug pada proyek.
+- Setiap kali melakukan ```clone``` pada repository Git secara otomatis dapat digunakan sebagai backup dari proyek.
 
 ## Menurut Anda, dari semua framework yang ada, mengapa framework Django dijadikan permulaan pembelajaran pengembangan perangkat lunak?
-Menurut saya, framework django ini lumayan "newbie friendly" karena di dalamnya sudah tersedia fitur-fitur secara default yang dapat saya manfaatkan. Adanya konsep MVT (Model-View-Template) juga sangat membantu dan mudah untuk dipahami bagi orang yang baru mulai belajar pengembangan software. Selain itu, framework django juga memiliki keamanan bawaan pada banyak aspek, salah satunya dengan adanya konsep ORM (Object-Relation Mapping) sehingga dapat meminimalisir terjadinya risiko dari pihak yang ingin mengambil data user dengan teknik SQL Injection.
+Menurut saya, framework django ini lumayan "newbie friendly" karena di dalamnya sudah tersedia fitur-fitur secara default yang dapat saya manfaatkan. Adanya konsep MVT (Model-View-Template) juga sangat membantu dan mudah untuk dipahami bagi orang yang baru mulai belajar pengembangan software. Selain itu, framework django juga memiliki keamanan bawaan pada banyak aspek, salah satunya dengan adanya konsep ORM (Object-Relation Mapping) sehingga dapat meminimalisir terjadinya risiko dari pihak ilegal yang ingin mengambil data user dengan SQL Injection.
 
 ## Mengapa model pada Django disebut sebagai ORM?
 Secara garis besar, konsep ORM (Object-Relation Mapping) pada framework django dapat memudahkan developer dalam pengembangan proyeknya karena developer dapat berinteraksi dengan database melalui objek bahasa pemrograman tanpa harus membuat query SQL secara langsung. Selain itu, developer dapat melakukan operasi CRUD (Copy, Read, Update, Delete) dengan menggunakan bahasa pemrograman python tanpa perlu memikirkan detail mengenai implementasi databasenya, berikut contohnya:
