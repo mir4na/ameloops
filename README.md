@@ -203,7 +203,7 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       ```
       git push pws main:master
       ```
-   9. Ketika sudah melakukan push, pastikan tertulis status ```succesful``` pada log proyeknya sehingga menandakan bahwa deploy telah berhasil.
+   9. Ketika sudah melakukan push, pastikan tertulis status ```successful``` pada log proyeknya sehingga menandakan bahwa deploy telah berhasil.
 
 ## Buatlah bagan yang berisi request client ke web aplikasi berbasis Django beserta responnya dan jelaskan pada bagan tersebut kaitan antara urls.py, views.py, models.py, dan berkas html.
 ![image](https://github.com/user-attachments/assets/b78beffe-f004-4e9a-83c7-619bed86bd19)
