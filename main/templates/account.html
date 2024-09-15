@@ -1,9 +1,21 @@
 {% include 'navbar.html' %}
 
 {% block content %}
-<head><link rel="icon" href="data:,"></head>
 <div class="content-container">
     <h1 class="text-center mb-4">HELLO {{ name }}!</h1>
-    <p class="text-center">THIS IS ACCOUNT PAGE</p>
+    <p class="text-center">THIS IS ADMIN PAGE</p>
 </div>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table>
+        {{ form.as_table }}
+        <tr>
+            <td></td>
+            <td>
+                <input type="submit" value="Add Product Form"/>
+            </td>
+        </tr>
+    </table>
+</form>
 {% endblock %}

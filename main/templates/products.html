@@ -1,9 +1,132 @@
 {% include 'navbar.html' %}
+{% load static %}
 
 {% block content %}
-<div class="content-container">
-    <h1 class="text-center mb-4">Categories & Products</h1>
-    <p class="text-center">THIS IS PRODUCTS PAGE</p>
-    <link rel="icon" href="data:,">
+<div class="container">
+    <!-- Categories Section -->
+    <div class="categories">
+        <div class="category active" data-category="all">All Products</div>
+        {% for category in categories %}
+        <div class="category" data-category="{{ category.name }}">{{ category.name }}</div>
+        {% endfor %}
+    </div>
+
+    <!-- Products Section -->
+    {% if not product_entries %}
+    <p>No products available yet.</p>
+    {% else %}
+    <div class="products">
+        {% for product_entry in product_entries %}
+        <div class="product" data-category="{{ product_entry.category.name }}">  <!-- Menggunakan category.name -->
+            <div class="product-image-container">
+                <img src="{{ product_entry.image.url }}" alt="{{ product_entry.name }}" class="product-image">
+            </div>
+            <div class="product-info">
+                <div class="product-name">{{ product_entry.name }}</div>
+                <div class="product-price">{{ product_entry.price }}</div>
+                <div class="product-description">{{ product_entry.description }}</div>
+                <div class="product-stock">In stock: {{ product_entry.stock }}</div>
+                <div class="product-category">Category: {{ product_entry.category.name }}</div> <!-- Menampilkan kategori -->
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Add New Product Button -->
+    <div class="add-product-section">
+        <a href="{% url 'main:create_product_entry' %}" class="add-new-product">
+            <button>Add New Product</button>
+        </a>
+    </div>
 </div>
+
+<style>
+    .container {
+        max-width: auto;
+        margin: 0 auto;
+        padding: auto;
+    }
+
+    .categories {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .category {
+        padding: 10px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        text-align: center;
+        flex: 1;
+        margin: 0 5px;
+    }
+
+    .category.active {
+        background-color: #f0f0f0;
+        border-color: #333;
+    }
+
+    .products {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .product {
+        display: flex;
+        border: 1px solid #ccc;
+        padding: 15px;
+        width: 100%;
+    }
+
+    .product-image-container {
+        flex-shrink: 0;
+        width: 200px;
+        height: 200px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+    }
+
+    .product-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: cover;
+    }
+
+    .product-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-name,
+    .product-price,
+    .product-description,
+    .product-stock,
+    .product-category {
+        margin-bottom: 10px;
+    }
+
+    .add-product-section {
+        text-align: right;
+        margin-top: 20px;
+    }
+
+    .add-product-section button {
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+
+    .add-product-section button:hover {
+        background-color: #555;
+    }
+</style>
 {% endblock %}
