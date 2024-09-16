@@ -3,12 +3,18 @@
 
 {% block content %}
 <div class="container">
-    <!-- Categories Section -->
-    <div class="categories">
-        <div class="category active" data-category="all">All Products</div>
-        {% for category in categories %}
-        <div class="category" data-category="{{ category.name }}">{{ category.name }}</div>
-        {% endfor %}
+    <!-- Categories Slider Section -->
+    <div class="categories-slider">
+        <div class="categories-slider-inner">
+            <div class="categories">
+                
+                {% for category in categories %}
+                <div class="category" data-category="{{ category.name }}">{{ category.name }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <button class="slide-btn prev">&lt;</button>
+        <button class="slide-btn next">&gt;</button>
     </div>
 
     <!-- Products Section -->
@@ -17,7 +23,7 @@
     {% else %}
     <div class="products">
         {% for product_entry in product_entries %}
-        <div class="product" data-category="{{ product_entry.category.name }}">  <!-- Menggunakan category.name -->
+        <div class="product" data-category="{{ product_entry.category.name }}">
             <div class="product-image-container">
                 <img src="{{ product_entry.image.url }}" alt="{{ product_entry.name }}" class="product-image">
             </div>
@@ -26,7 +32,7 @@
                 <div class="product-price">{{ product_entry.price }}</div>
                 <div class="product-description">{{ product_entry.description }}</div>
                 <div class="product-stock">In stock: {{ product_entry.stock }}</div>
-                <div class="product-category">Category: {{ product_entry.category.name }}</div> <!-- Menampilkan kategori -->
+                <div class="product-category">Category: {{ product_entry.category.name }}</div>
             </div>
         </div>
         {% endfor %}
@@ -48,24 +54,57 @@
         padding: auto;
     }
 
+    .categories-slider {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .categories-slider-inner {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+    }
+
     .categories {
         display: flex;
-        justify-content: space-between;
-        margin-bottom: 20px;
+        flex-wrap: nowrap;
     }
 
     .category {
+        flex: 0 0 auto;
+        width: 100px; /* Adjust width as needed */
         padding: 10px;
         border: 1px solid #ccc;
         cursor: pointer;
         text-align: center;
-        flex: 1;
         margin: 0 5px;
+        box-sizing: border-box;
     }
 
-    .category.active {
-        background-color: #f0f0f0;
-        border-color: #333;
+
+    .slide-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #333;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        z-index: 1;
+    }
+
+    .prev {
+        left: 0;
+    }
+
+    .next {
+        right: 0;
+    }
+
+    .slide-btn:hover {
+        background-color: #555;
     }
 
     .products {
@@ -129,4 +168,34 @@
         background-color: #555;
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sliderInner = document.querySelector('.categories-slider-inner');
+        const categories = document.querySelector('.categories');
+        const prevBtn = document.querySelector('.slide-btn.prev');
+        const nextBtn = document.querySelector('.slide-btn.next');
+        const categoryWidth = document.querySelector('.category').offsetWidth;
+        const visibleCount = 3; // Number of visible categories
+        let currentIndex = 0;
+
+        function updateSlider() {
+            const offset = -currentIndex * categoryWidth;
+            sliderInner.style.transform = `translateX(${offset}px)`;
+        }
+
+        nextBtn.addEventListener('click', function() {
+            currentIndex = (currentIndex + 1) % (categories.children.length - visibleCount + 1);
+            updateSlider();
+        });
+
+        prevBtn.addEventListener('click', function() {
+            currentIndex = (currentIndex - 1 + (categories.children.length - visibleCount + 1)) % (categories.children.length - visibleCount + 1);
+            updateSlider();
+        });
+
+        // Initialize slider
+        updateSlider();
+    });
+</script>
 {% endblock %}
