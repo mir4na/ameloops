@@ -3,62 +3,74 @@
 
 {% block extra_css %}
 <style>
-    .futuristic-container {
-        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-        border-radius: 20px;
+    body {
+        background: linear-gradient(135deg, #00FFFF, #FFFFFF, #FFFF00);
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        font-family: 'Dosis', sans-serif;
+        overflow-y: scroll;
+        scrollbar-width: none;
+    }
+
+    .productform-form-container {
         padding: 2rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        max-width: 600px;
+        max-width: 800px;
         margin: 2rem auto;
     }
 
-    .futuristic-form h1 {
-        color: #fff;
+    .productform-form h1 {
+        font-family: 'Signika', sans-serif;
+        font-weight: 600;
+        color: #333;
         font-size: 2.5rem;
         text-transform: uppercase;
         margin-bottom: 1.5rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
 
-    .futuristic-form p {
-        color: #f0f0f0;
+    .productform-form p {
+        font-family: 'Dosis', sans-serif;
+        color: #333;
         font-size: 1.2rem;
         margin-bottom: 2rem;
     }
 
-    .futuristic-form table {
+    .productform-form table {
         width: 100%;
     }
 
-    .futuristic-form td {
+    .productform-form td {
         padding: 0.5rem 0;
     }
 
-    .futuristic-form input[type="text"],
-    .futuristic-form input[type="number"],
-    .futuristic-form textarea {
+    .productform-form input[type="text"],
+    .productform-form input[type="number"],
+    .productform-form textarea {
         width: 100%;
         padding: 0.8rem;
         border: none;
         border-radius: 10px;
-        background-color: rgba(255, 255, 255, 0.1);
-        color: #fff;
+        background-color: rgba(255, 255, 255, 0.5);
+        color: #333;
         font-size: 1rem;
         transition: all 0.3s ease;
+        font-family: 'Dosis', sans-serif;
+        backdrop-filter: blur(5px);
     }
 
-    .futuristic-form input[type="text"]:focus,
-    .futuristic-form input[type="number"]:focus,
-    .futuristic-form textarea:focus {
-        background-color: rgba(255, 255, 255, 0.2);
+    .productform-form input[type="text"]:focus,
+    .productform-form input[type="number"]:focus,
+    .productform-form textarea:focus {
+        background-color: rgba(255, 255, 255, 0.8);
         outline: none;
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
     }
 
-    .futuristic-form input[type="submit"] {
-        background: linear-gradient(45deg, #00c6ff, #0072ff);
+    .productform-form input[type="submit"] {
+        background: linear-gradient(45deg, #00FFFF, #FFFF00);
         border: none;
-        color: white;
+        color: #333;
         padding: 1rem 2rem;
         border-radius: 50px;
         font-size: 1.1rem;
@@ -67,27 +79,48 @@
         text-transform: uppercase;
         letter-spacing: 1px;
         margin-top: 1rem;
+        font-family: 'Signika', sans-serif;
+        font-weight: 600;
     }
 
-    .futuristic-form input[type="submit"]:hover {
-        background: linear-gradient(45deg, #0072ff, #00c6ff);
+    .productform-form input[type="submit"]:hover {
+        background: linear-gradient(45deg, #FFFF00, #00FFFF);
         transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+        box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
     }
-</style>
-{% endblock %}
 
-{% block content %}
-<div class="futuristic-container">
-    <div class="futuristic-form">
-    <h1 class="text-center mb-4">HELLO {{ name }}!</h1>
-    <p class="text-center">THIS IS ADMIN PAGE</p>
+    .productform-form::before {
+        content: '';
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        right: -5px;
+        bottom: -5px;
+        background: linear-gradient(45deg, #00FFFF, #FFFF00, #00FFFF);
+        z-index: -1;
+        filter: blur(20px);
+        opacity: 0.7;
+        animation: glowing 20s linear infinite;
+    }
 
-    <form method="POST" enctype="multipart/form-data">
+    @keyframes glowing {
+        0% { filter: hue-rotate(0deg); }
+        100% { filter: hue-rotate(360deg); }
+    }
+    </style>
+    {% endblock %}
+
+    {% block content %}
+    <div class="productform-form-container">
+    <div class="productform-form">
+        <h1 class="text-center mb-4">HELLO {{ name }}!</h1>
+        <p class="text-center">THIS IS ADMIN PAGE</p>
+
+        <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <table>
-        {{ form.as_table }}
-        <tr>
+            {{ form.as_table }}
+            <tr>
             <td></td>
             <td>
                 <input type="submit" value="Add Product Form"/>
