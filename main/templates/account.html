@@ -1,21 +1,100 @@
 {% include 'navbar.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .futuristic-container {
+        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+
+    .futuristic-form h1 {
+        color: #fff;
+        font-size: 2.5rem;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .futuristic-form p {
+        color: #f0f0f0;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
+    .futuristic-form table {
+        width: 100%;
+    }
+
+    .futuristic-form td {
+        padding: 0.5rem 0;
+    }
+
+    .futuristic-form input[type="text"],
+    .futuristic-form input[type="number"],
+    .futuristic-form textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .futuristic-form input[type="text"]:focus,
+    .futuristic-form input[type="number"]:focus,
+    .futuristic-form textarea:focus {
+        background-color: rgba(255, 255, 255, 0.2);
+        outline: none;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .futuristic-form input[type="submit"] {
+        background: linear-gradient(45deg, #00c6ff, #0072ff);
+        border: none;
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 1rem;
+    }
+
+    .futuristic-form input[type="submit"]:hover {
+        background: linear-gradient(45deg, #0072ff, #00c6ff);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="content-container">
+<div class="futuristic-container">
+    <div class="futuristic-form">
     <h1 class="text-center mb-4">HELLO {{ name }}!</h1>
     <p class="text-center">THIS IS ADMIN PAGE</p>
-</div>
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <table>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table>
         {{ form.as_table }}
         <tr>
             <td></td>
             <td>
                 <input type="submit" value="Add Product Form"/>
             </td>
-        </tr>
-    </table>
-</form>
+            </tr>
+        </table>
+        </form>
+    </div>
+</div>
 {% endblock %}

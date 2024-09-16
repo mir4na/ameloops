@@ -1,15 +1,16 @@
 from django.test import TestCase
-from .models import Product
+from .models import Product, Category
 
 class ProductModelTest(TestCase):
 
     def setUp(self):
+        self.category = Category.objects.create(name="Electronics")
         self.product = Product.objects.create(
             name="Test Product",
             price=1000,
             description="This is a test product",
             stock=10,
-            category="Electronics",
+            category=self.category,
         )
 
     def test_product_creation(self):
@@ -18,7 +19,7 @@ class ProductModelTest(TestCase):
         self.assertEqual(product.price, 1000)
         self.assertEqual(product.description, "This is a test product")
         self.assertEqual(product.stock, 10)
-        self.assertEqual(product.category, "Electronics")
+        self.assertEqual(product.category.name, "Electronics")
 
     def test_product_string_representation(self):
         product = self.product
@@ -29,23 +30,16 @@ class ProductModelTest(TestCase):
             name="New Product",
             price=500,
             description="This is another test product",
+            category=self.category
         )
         self.assertEqual(new_product.stock, 0)
 
     def test_blank_and_null_category(self):
-        product_with_blank_category = Product.objects.create(
-            name="Blank Category Product",
-            price=1500,
-            description="Product with blank category",
-            stock=5,
-            category=""
-        )
-        product_with_null_category = Product.objects.create(
-            name="Null Category Product",
-            price=2000,
-            description="Product with null category",
-            stock=5,
-            category=None
-        )
-        self.assertEqual(product_with_blank_category.category, "")
-        self.assertIsNone(product_with_null_category.category)
+        with self.assertRaises(ValueError):
+            Product.objects.create(
+                name="Blank Category Product",
+                price=1500,
+                description="Product with blank category",
+                stock=5,
+                category=""
+            )

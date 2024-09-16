@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from main.forms import ProductForm
-from main.models import Product, Category 
+from main.models import Product, Category
 from django.http import HttpResponse
 from django.core import serializers
 
@@ -27,24 +27,42 @@ def cart_page(request):
 
 def create_product_entry(request):
     form = ProductForm(request.POST or None, request.FILES or None)
-    if request.method == "POST" and form.is_valid():
-        form.save()
-        return redirect('main:products')
-    context = {'form': form}
-    return render(request, "account.html", context)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect('main:products')
+        else:
+            return render(request, "account.html", {'form': form, 'error': 'Form is invalid'})
+    return render(request, "account.html", {'form': form})
 
-def products_xml(request):
-    data = Product.objects.all()
-    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+def serialize_data(request, model, fmt, id=None):
+    if id:
+        data = get_object_or_404(model, pk=id)
+        data = [data]
+    else:
+        data = model.objects.all()
+    return HttpResponse(serializers.serialize(fmt, data), content_type=f"application/{fmt}")
 
 def products_json(request):
-    data = Product.objects.all()
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+    return serialize_data(request, Product, "json")
 
-def product_xml_by_id(request, id):
-    data = Product.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+def products_xml(request):
+    return serialize_data(request, Product, "xml")
 
 def product_json_by_id(request, id):
-    data = Product.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+    return serialize_data(request, Product, "json", id)
+
+def product_xml_by_id(request, id):
+    return serialize_data(request, Product, "xml", id)
+
+def category_json(request):
+    return serialize_data(request, Category, "json")
+
+def category_xml(request):
+    return serialize_data(request, Category, "xml")
+
+def category_json_by_id(request, id):
+    return serialize_data(request, Category, "json", id)
+
+def category_xml_by_id(request, id):
+    return serialize_data(request, Category, "xml", id)
