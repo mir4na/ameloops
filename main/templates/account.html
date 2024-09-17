@@ -14,7 +14,7 @@
     }
 
     .productform-form-container {
-        padding: 2rem;
+        padding: 1rem;
         max-width: 800px;
         margin: 2rem auto;
     }
@@ -25,7 +25,7 @@
         color: #333;
         font-size: 2.5rem;
         text-transform: uppercase;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
 
@@ -86,21 +86,21 @@
     .productform-form input[type="submit"]:hover {
         background: linear-gradient(45deg, #FFFF00, #00FFFF);
         transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+        box-shadow: 0 5px 15px rgba(4, 12, 50, 0.4);
     }
 
     .productform-form::before {
+        background: linear-gradient(45deg, #00FFFF, #FFFF00, #00FFFF);
         content: '';
         position: absolute;
         top: -5px;
         left: -5px;
         right: -5px;
         bottom: -5px;
-        background: linear-gradient(45deg, #00FFFF, #FFFF00, #00FFFF);
         z-index: -1;
         filter: blur(20px);
         opacity: 0.7;
-        animation: glowing 20s linear infinite;
+        animation: glowing 10s linear infinite;
     }
 
     @keyframes glowing {
@@ -113,8 +113,8 @@
     {% block content %}
     <div class="productform-form-container">
     <div class="productform-form">
-        <h1 class="text-center mb-4">HELLO {{ name }}!</h1>
-        <p class="text-center">THIS IS ADMIN PAGE</p>
+        <h1 class="text-center mb-2">THIS IS ADMIN PAGE</h1>
+        <p class="text-center">add your wonderful product here!</p>
 
         <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}

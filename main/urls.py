@@ -15,5 +15,6 @@ urlpatterns = [
     path('category_json/', views.category_json, name='category_json'),
     path('category_xml/', views.category_xml, name='category_xml'),
     path('category_json/<str:id>/', views.category_json_by_id, name='category_json_by_id'),
-    path('category_xml/<str:id>/', views.category_xml_by_id, name='category_xml_by_id')
+    path('category_xml/<str:id>/', views.category_xml_by_id, name='category_xml_by_id'),
 ]
+
