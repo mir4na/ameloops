@@ -256,3 +256,83 @@ book_to_update.save()
 book_to_delete = Book.objects.get(id=2)
 book_to_delete.delete()
 ```
+---
+
+# Tugas 3: Implementasi Form dan Data Delivery pada Django
+
+Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-poin dalam checklist:
+
+## Membuat input form untuk menambahkan objek model pada app sebelumnya.
+
+   1. Buat file bernama ```forms.py``` pada direktori main (setara dengan ```models.py```, ```views.py```, dan lainnya)
+   2. Buat code pada ```forms.py``` seperti berikut
+   ```
+   from django import forms
+   from .models import *
+   
+   class ProductForm(forms.ModelForm):
+       class Meta:
+           model = Product
+           fields = ['name', 'price', 'description', 'stock', 'category', 'image']
+           widgets = {
+               'category': forms.Select(attrs={'class': 'form-control'}),
+           }
+   
+   ```
+   Secara garis besar, code ini membuat form untuk HTML yang terdiri dari input ```name```, ```price```, ```description```, ```stock```, ```category```, dan ```image```. Lalu, field pada ```category``` akan di-render sebagai dropdown (<select>) dengan class form-control yang artinya dapat disesuaikan dengan stylenya.
+   3. Lalu, pergi ke ```views.py``` pada direktori ```main```, lakukan import object pada ```forms.py``` yang telah dibuat.
+   ```
+   from main.forms import ProductForm
+   ```
+   4. Buatlah suatu fungsi yang bertujuan untuk menambahkan suatu produk melalui form yang telah dibuat, contohnya seperti berikut.
+   ```
+   def create_product_entry(request):
+       form = ProductForm(request.POST or None, request.FILES or None)
+       if request.method == "POST":
+           if form.is_valid():
+               form.save()
+               return redirect('main:products')
+           else:
+               return render(request, "account.html", {'form': form, 'error': 'Form is invalid'})
+       return render(request, "account.html", {'form': form})
+   ```
+
+   Berikut alur eksekusi dari code di atas:
+   1. Ketika user mengakses halaman untuk menambahkan suatu produk, maka form dengan input kosong akan ditampilkan.
+   2. Apabila user melakukan input untuk data produk melalui method ```POST```, maka fungsi akan checking apakah input valid atau tidak.
+   3. Apabila valid, maka simpan di database dan user akan di-redirect ke page product. Jika tidak, maka akan ditampilkan pesan error.
+   
+   5. Pergi ke ```urls.py``` yang ada pada direktori ```main```, lalu tambahkan path URL pada variabel ```urlpatterns``` untuk mengakses fungsi pada ```views.py``` yang sudah dibuat sebelumnya.
+   ```
+   urlpatterns = [
+   ...
+   path('account/', views.create_product_entry, name='create_product_entry'),
+   ...
+   ]
+   ```
+   Disini saya melakukan konfigurasi routing fungsi ```create_product_entry``` sebagai view pada page ```account```.
+   6. Setelah path URL diatur pada urls.py, maka implementasikan form yang telah dibuat pada page HTML. Berikut contoh implementasi mengenai potongan codenya.
+   ```
+   ...
+   <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <table>
+         {{ form.as_table }}
+         <tr>
+            <td></td>
+            <td>
+               <input type="submit" value="Add Product Form"/>
+            </td>
+         </tr>
+      </table>
+   </form>
+   ...
+   ```
+   Potongan code ini memiliki arti sebagai berikut.
+   1. Form ini di-render dengan method POST dan dapat menangani file yang diunggah karena menggunakan ```enctype="multipart/form-data"```. Form yang dirender mencakup field-field seperti ```name```, ```price```, ```description```, ```category```, dan ```image``` yang sudah didefinisikan di ProductForm.
+   2. Pengguna mengisi semua field dalam form, dan saat tombol submit ```Add Product Form``` diklik, semua data form (termasuk file yang diunggah jika ada) dikirim ke server melalui metode ```POST```.
+   3. Saat form disubmit, form akan dikirim ke URL yang sama (jika tidak ada action pada form). Data yang dikirimkan akan divalidasi di view (```create_product_entry```) menggunakan ```form.is_valid()```.
+   4. CSRF token memastikan bahwa form dikirim oleh pengguna yang sah dan tidak dari sumber berbahaya. Django akan memeriksa apakah CSRF token yang dikirimkan cocok dengan token yang diharapkan.
+   5. Di view Django, jika form valid, data akan disimpan ke database dengan memanggil ```form.save()```.
+      
+   7. Dengan berhasilnya pengisian pada form yang telah dibuat, maka data produk akan disimpan di dalam database. Kita dapat mengaksesnya apabila sekiranya sewaktu-waktu dibutuhkan.
