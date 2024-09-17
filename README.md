@@ -424,7 +424,7 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       ```
       ../product_xml/[id]
       ```
-   3. Setelah konfigurasi path URL, maka jalankan command ```python manage.py runserver``` pada terminal, lalu pergi ke ```http://localhost:8000/``` dan tambahkan path baru seperti ```../product_json``` atau ```../product_xml``` untuk melihat keseluruhan data dalam format JSON atau XML.
+   3. Setelah konfigurasi path URL, maka jalankan command ```python manage.py runserver``` pada terminal, lalu pergi ke ```http://localhost:8000/``` dan tambahkan path baru pada URL seperti ```../product_json``` atau ```../product_xml``` untuk melihat keseluruhan data dalam format JSON atau XML.
 
 ##  Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?
 ##  Menurutmu, mana yang lebih baik antara XML dan JSON? Mengapa JSON lebih populer dibandingkan XML?
