@@ -427,6 +427,8 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
    3. Setelah konfigurasi path URL, maka jalankan command ```python manage.py runserver``` pada terminal, lalu pergi ke ```http://localhost:8000/``` dan tambahkan path baru pada URL seperti ```../product_json``` atau ```../product_xml``` untuk melihat keseluruhan data dalam format JSON atau XML.
 
 ##  Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?
+   Data delivery diperlukan dalam pengimplementasian sebuah platform untuk memastikan informasi yang tepat dapat diakses oleh user sesuai kebutuhan mereka secara aman dan efisien. Ini memungkinkan adanya integrasi yang baik antara sistem backend dan frontend dalam memastikan data yang relevan tersedia tepat waktu. Selain itu, mekanisme pengiriman data yang efektif mendukung skalabilitas dan performa platform dalam menangani beban traffic user yang tinggi.
+
 ##  Menurutmu, mana yang lebih baik antara XML dan JSON? Mengapa JSON lebih populer dibandingkan XML?
    Menurut saya JSON lebih baik dibandingkan dengan XML karena JSON memiliki readability dan struktur data yang sederhana sehingga lebih mudah untuk dibaca. Tidak seperti JSON, XML mempunyai struktur data yang cukup kompleks serta penggunaan tag pembuka dan tag penutup yang membuat isi file menjadi lebih panjang sehingga cenderung sulit untuk dibaca. Selain itu, JSON kompatibel dengan Javascript, artinya JSON dapat digunakan langsung di Javascript tanpa adanya konversi tambahan. JSON juga lebih mudah di-serialize karena banyak built-in yang mendukung penanganan JSON pada programming language.
    
@@ -434,7 +436,10 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
    Method dari ```is_valid()``` secara garis besar berfungsi untuk melakukan validasi terhadap input-input yang diberikan pada field. Method ```is_valid()``` juga memberikan pesan atau informasi apabila ada input yang salah sehingga user dapat mengetahui apa data yang seharusnya diinput pada field. Kita membutuhkan method ini untuk menjaga keamanan data dengan memastikan bahwa data yang diterima oleh input adalah data yang valid dan sesuai dengan formatnya. Ini mencegah kesalahan dan potensi masalah keamanan yang dapat muncul dari data yang tidak valid. Selain itu, data yang tidak valid dapat menyebabkan app tidak berjalan dengan semestinya. Maka dari itu, method ```is_valid()``` memiliki peran penting untuk menjaga validasi data.
    
 ##  Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
-   Penggunaan ```csrf_token``` berfungsi untuk memastikan bahwa request yang diberikan pada app dikirimkan oleh user yang sah dan bukan dari pihak lain. 
+   Penggunaan ```csrf_token``` berfungsi untuk memastikan bahwa request yang diberikan pada app dikirimkan oleh user yang sah dan bukan dari pihak lain. Ini artinya ```csrf_token``` dapat mencegah terjadinya serangan CSRF(Cross Site Request Forgery).
+   ![image](https://github.com/user-attachments/assets/f66f58cd-02ca-4f41-89f1-1979315418a5)
+   CSRF adalah jenis serangan yang memungkinkan pihak ilegal untuk mengirimkan request melalui user yang sudah terautentikasi pada suatu app dengan tanpa izin dari user itu sendiri. Apabila ```csrf_token``` tidak diimplementasikan dalam form Django, atau asumsikan serangan CSRF berhasil, maka pihak penyerang dapat melakukan segala manipulasi baik dari perubahan atau penghapusan suatu data bahkan hingga melakukan transaksi yang sifatnya ilegal. Adanya ```csrf_token``` ini, mencegah dari request yang tidak valid sehingga server akan menolak apabila token yang datang merupakan token yang tidak cocok.
+
 ##  Mengakses keempat URL di poin 2 menggunakan Postman, membuat screenshot dari hasil akses URL pada Postman, dan menambahkannya ke dalam README.md.
    - ```http://localhost:8000/product_json```
      ![image](https://github.com/user-attachments/assets/3e15f048-63bb-4307-8546-663b57f4c3ee)
