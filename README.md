@@ -458,3 +458,9 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
    - Misal, saya memasukkan id dari item ```Anti-Matil``` dan menambahkannya ke path parameter.
      ```http://localhost:8000/product_xml/00167025-564d-491f-8e9b-d974b9446d65```
      ![image](https://github.com/user-attachments/assets/fb0ac0fc-cca8-43f8-985a-3ab6616985bf)
+
+## Melakukan add-commit-push ke GitHub.
+
+   1. Lakukan command ```git add .``` pada terminal. Command ini berfungsi untuk menyimpan semua perubahan pada file ke staging area.
+   2. Setelah itu, lakukan command ```git commit -m [message]```. Command ini berfungsi untuk menyimpan commit ke staging area disertai dengan adanya pesan singkat yang deskriptif.
+   3. Lalu, lakukan command ```git push -u origin [nama branch]```. Command ini berfungsi untuk mengirim(push) perubahan dari branch lokal ke remote repository yang bernama origin. 
