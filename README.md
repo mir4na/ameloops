@@ -4,7 +4,7 @@
 - NPM: 2306208855
 - Kelas: PBP-F
 
-- Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/) (PWS sedang error)
+- Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
 
 Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-poin dalam checklist:
 
