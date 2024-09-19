@@ -107,27 +107,108 @@
         0% { filter: hue-rotate(0deg); }
         100% { filter: hue-rotate(360deg); }
     }
-    </style>
-    {% endblock %}
 
-    {% block content %}
-    <div class="productform-form-container">
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .toggle-button {
+        background: linear-gradient(45deg, #00FFFF, #FFFF00);
+        border: none;
+        color: #333;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-family: 'Signika', sans-serif;
+        font-weight: 600;
+    }
+
+    .toggle-button:hover {
+        background: linear-gradient(45deg, #FFFF00, #00FFFF);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(4, 12, 50, 0.4);
+    }
+
+    .form-container {
+        display: none;
+    }
+
+    .form-container.active {
+        display: block;
+    }
+
+    .category-form input[type="text"] {
+        width: 100%;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.5);
+        color: #333;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-family: 'Dosis', sans-serif;
+        backdrop-filter: blur(5px);
+        margin-bottom: 1rem;
+    }
+
+    .category-form input[type="text"]:focus {
+        background-color: rgba(255, 255, 255, 0.8);
+        outline: none;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="productform-form-container">
     <div class="productform-form">
         <h1 class="text-center mb-2">THIS IS ADMIN PAGE</h1>
-        <p class="text-center">add your wonderful product here!</p>
+        <p class="text-center">add your wonderful product or category here!</p>
 
-        <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <table>
-            {{ form.as_table }}
-            <tr>
-            <td></td>
-            <td>
-                <input type="submit" value="Add Product Form"/>
-            </td>
-            </tr>
-        </table>
-        </form>
+        <div class="button-container">
+            <button class="toggle-button" onclick="toggleForm('product-form')">Add Product</button>
+            <button class="toggle-button" onclick="toggleForm('category-form')">Add Category</button>
+        </div>
+
+        <div id="product-form" class="form-container">
+            <!--<h2 class="text-center mb-2">Add New Product</h2>-->
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <table>
+                    {{ form.as_table }}
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input type="submit" value="Add Product"/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
+        <div id="category-form" class="form-container">
+            <!--<h2 class="text-center mb-2">Add New Category</h2>-->
+            <form method="POST" class="category-form">
+                {% csrf_token %}
+                <input type="text" name="category_name" placeholder="Enter new category name" required>
+                <input type="submit" value="Add Category"/>
+            </form>
+        </div>
     </div>
 </div>
+
+<script>
+    function toggleForm(formId) {
+        const forms = document.querySelectorAll('.form-container');
+        forms.forEach(form => form.classList.remove('active'));
+        document.getElementById(formId).classList.add('active');
+    }
+</script>
 {% endblock %}
