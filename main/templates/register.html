@@ -1,0 +1,156 @@
+{% load static %}
+
+{% block meta %}
+<title>Register</title>
+{% endblock meta %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;600&family=Signika:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    @keyframes glowing {
+        0% { filter: hue-rotate(0deg); }
+        100% { filter: hue-rotate(360deg); }
+    }
+
+    .register-content {
+        background: linear-gradient(135deg, #00FFFF, #ff0e9e, #FFFF00);
+        background-size: 200% 200%;
+        animation: glowing 10s ease infinite;
+        min-height: 100vh;
+        font-family: 'Dosis', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .register-container {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        padding: 2rem;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 10px 20px rgba(4, 12, 50, 0.2);
+    }
+
+    .register-title {
+        font-family: 'Signika', sans-serif;
+        font-weight: 600;
+        color: #333;
+        font-size: 2.5rem;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .register-form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-family: 'Signika', sans-serif;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-family: 'Dosis', sans-serif;
+        font-size: 1rem;
+    }
+
+    .register-btn {
+        background: linear-gradient(45deg, #00FFFF, #FFFF00);
+        border: none;
+        color: #333;
+        padding: 1rem 2rem;
+        border-radius: 5px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-family: 'Signika', sans-serif;
+        font-weight: 600;
+        margin-top: 1rem;
+    }
+
+    .register-btn:hover {
+        background: linear-gradient(45deg, #FFFF00, #00FFFF);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(4, 12, 50, 0.4);
+    }
+
+    .messages {
+        list-style-type: none;
+        padding: 0;
+        margin-bottom: 1rem;
+    }
+
+    .messages li {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 5px;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .login-link a {
+        color: #00BFFF;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .login-link a:hover {
+        color: #0080FF;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-content">
+    <div class="register-container">
+        <h1 class="register-title">Register</h1>
+
+        <form method="POST" action="" class="register-form">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+            </div>
+            {% endfor %}
+            <button type="submit" class="register-btn">Register</button>
+        </form>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div class="login-link">
+            Already have an account?
+            <a href="{% url 'main:login' %}">Login Now</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}
