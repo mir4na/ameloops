@@ -2,6 +2,10 @@
 {% load static %}
 {% load rupiah_filter %}
 
+{% block meta %}
+<title>Our Products</title>
+{% endblock meta %}
+
 {% block extra_head %}
 <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;600&family=Signika:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -128,6 +132,7 @@
         opacity: 0;
         transform: translateY(-20px);
         animation: fadeInDown 0.5s ease forwards;
+        cursor: pointer;
     }
 
     @keyframes fadeInDown {
@@ -203,6 +208,48 @@
         transform: translateY(-3px);
         box-shadow: 0 5px 15px rgba(4, 12, 50, 0.4);
     }
+
+    .notification-bar {
+        position: fixed;
+        bottom: -100px;
+        left: 0;
+        right: 0;
+        background-color: rgba(0, 255, 255, 0.9);
+        color: #333;
+        padding: 15px;
+        text-align: center;
+        transition: bottom 0.5s ease;
+        z-index: 1000;
+        font-family: 'Signika', sans-serif;
+        font-weight: 600;
+    }
+
+    .notification-bar.show {
+        bottom: 0;
+    }
+
+    .notification-buttons {
+        margin-top: 10px;
+    }
+
+    .notification-buttons button {
+        margin: 0 10px;
+        padding: 5px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .notification-buttons button.yes {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .notification-buttons button.no {
+        background-color: #f44336;
+        color: white;
+    }
 </style>
 {% endblock %}
 
@@ -231,7 +278,7 @@
         {% else %}
         <div class="products">
             {% for product_entry in product_entries %}
-            <div class="product" data-category="{{ product_entry.category.name }}">
+            <div class="product" data-category="{{ product_entry.category.name }}" data-product-id="{{ product_entry.id }}" data-product-name="{{ product_entry.name }}">
                 <div class="product-image-container">
                     <img src="{{ product_entry.image.url }}" alt="{{ product_entry.name }}" class="product-image">
                 </div>
@@ -252,6 +299,15 @@
                 <button>Add New Product</button>
             </a>
         </div>
+    </div>
+</div>
+
+<!-- Notification Bar -->
+<div id="notification-bar" class="notification-bar">
+    <span id="notification-message"></span>
+    <div class="notification-buttons">
+        <button class="yes" onclick="confirmAddToCart()">Yes</button>
+        <button class="no" onclick="hideNotification()">No</button>
     </div>
 </div>
 {% endblock %}
@@ -304,6 +360,74 @@
                         product.style.display = 'none';
                     }
                 });
+            });
+        });
+
+        // Add click event listener to products
+        let currentProductId = null;
+
+        function showNotification(productId, productName) {
+            currentProductId = productId;
+            const notificationBar = document.getElementById('notification-bar');
+            const notificationMessage = document.getElementById('notification-message');
+            notificationMessage.textContent = `Add ${productName} to cart?`;
+            notificationBar.classList.add('show');
+        }
+
+        function hideNotification() {
+            const notificationBar = document.getElementById('notification-bar');
+            notificationBar.classList.remove('show');
+            currentProductId = null;
+        }
+
+        function confirmAddToCart() {
+            if (currentProductId) {
+                fetch(`/add-to-cart/${currentProductId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(data.message);
+                    } else {
+                        alert('Failed to add to cart: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('There was an error processing your request. Please try again.');
+                });
+            }
+            hideNotification();
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        products.forEach(product => {
+            product.addEventListener('click', function() {
+                const productId = this.dataset.productId;
+                const productName = this.dataset.productName;
+                showNotification(productId, productName);
             });
         });
     });

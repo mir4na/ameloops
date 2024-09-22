@@ -90,7 +90,7 @@
     }
 
     .productform-form::before {
-        background: linear-gradient(45deg, #00FFFF, #FFFF00, #00FFFF);
+        background: linear-gradient(45deg, #00FFFF, #FFFF00);
         content: '';
         position: absolute;
         top: -5px;
@@ -163,14 +163,46 @@
         outline: none;
         box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
     }
+
+    .user-info {
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    }
+
+    .user-info h2 {
+        font-family: 'Signika', sans-serif;
+        font-weight: 600;
+        color: #333;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .user-info p {
+        font-family: 'Dosis', sans-serif;
+        color: #555;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="productform-form-container">
     <div class="productform-form">
-        <h1 class="text-center mb-2">THIS IS ADMIN PAGE</h1>
-        <p class="text-center">add your wonderful product or category here!</p>
+        <div class="user-info">
+            {% if user.is_authenticated %}
+                <h2>Welcome, {{ user.username }}!</h2>
+                <p>Sesi terakhir login: {{ last_login }}</p>
+            {% else %}
+                <h2>Who are you??</h2>
+                <p>Please log in to access this page.</p>
+            {% endif %}
+        </div>
+        
+        <p class="text-center">Add your wonderful product or category here!</p>
 
         <div class="button-container">
             <button class="toggle-button" onclick="toggleForm('product-form')">Add Product</button>
@@ -209,6 +241,6 @@
         const forms = document.querySelectorAll('.form-container');
         forms.forEach(form => form.classList.remove('active'));
         document.getElementById(formId).classList.add('active');
-    }
+    }cument.getElementById(formId).classList.add('active');
 </script>
 {% endblock %}
