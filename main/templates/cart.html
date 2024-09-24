@@ -7,17 +7,16 @@
 {% endblock meta %}
 
 {% block content %}
-<div class="content-container">
+<div class="content-container mx-auto p-4">
     <h1 class="text-center mb-4">Shopping Cart</h1>
     {% if cart_items %}
-        <table class="table">
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Product</th>
                     <th>Price</th>
                     <th>Quantity</th>
                     <th>Total</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,15 +25,9 @@
                     <td>{{ item.product.name }}</td>
                     <td>{{ item.product.price|rupiah_format }}</td>
                     <td>
-                        <form action="{% url 'main:update_cart_item' item.id %}" method="post">
-                            {% csrf_token %}
-                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" onchange="this.form.submit()">
-                        </form>
+                        <span>1</span>  {# Menampilkan quantity tetap 1 #}
                     </td>
                     <td>{{ item.total_price|rupiah_format }}</td>
-                    <td>
-                        <a href="{% url 'main:remove_from_cart' item.id %}" class="btn btn-danger btn-sm">Remove</a>
-                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -42,11 +35,9 @@
                 <tr>
                     <td colspan="3"><strong>Total</strong></td>
                     <td><strong>{{ total|rupiah_format }}</strong></td>
-                    <td></td>
                 </tr>
             </tfoot>
         </table>
-        <a href="#" class="btn btn-primary">Proceed to Checkout</a>
     {% else %}
         <p class="text-center">Your cart is empty.</p>
     {% endif %}
