@@ -4,6 +4,59 @@
 
 - Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
 
+# Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
+
+   1. Aktifkan virtual environment, lalu pergi ke ```views.py``` pada direktori ```main```.
+      
+   2. Tambahkan import ```UserCreationForm```, ```AuthenticationForm```, dan ```datetime``` pada code.
+      ```
+      from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+      from django.contrib import messages
+      import datetime
+      ...
+      ```
+      - ```UserCreationForm```: Ini adalah form bawaan Django yang digunakan untuk membuat user baru. Form ini biasanya mencakup field seperti username, password, dan konfirmasi password.
+      - ```AuthenticationForm```: Ini adalah form yang digunakan untuk otentikasi user, biasanya untuk login. Form ini biasanya mencakup field untuk username dan password. Ketika user mengisi form ini dan mengirimkannya, Django akan memeriksa apakah kredensial yang diberikan valid atau tidak.
+      - ```messages```: Ini adalah modul dari Django untuk menampilkan pesan kepada user, misalnya, setelah berhasil login, mendaftar, atau ketika terjadi kesalahan. Modul ini juga dapat digunakan untuk kebutuhan debugging.
+      - ```datetime```: Modul datetime digunakan untuk bekerja dengan tanggal dan waktu. Pada tugas 4, modul ini berfungsi untuk mencatat waktu terakhir login dari user.
+        
+   3. Buatlah fungsi ```register_user``` yang berfungsi untuk melakukan registrasi dan menambah data user ketika telah didaftarkan.
+      ```
+      def register_user(request):
+          if request.method == 'POST':
+              form = UserCreationForm(request.POST)
+              if form.is_valid():
+                  form.save()
+                  messages.success(request, 'Successfully created an account!')
+                  return redirect('main:login')
+              else:
+                  messages.error(request, 'Wrong input!')
+          else:
+              form = UserCreationForm()
+      ```
+      Fungsi ini menangani pendaftaran user dengan memvalidasi input (```is_valid()```), menyimpan user baru jika data valid dengan method ```POST```, memberikan pesan kepada user (```messages```), dan mengarahkan mereka ke halaman login (```redirect```). Jika ada kesalahan dalam input, maka akan muncul pesan "Wrong input!" tanpa penghapusan input pada masing-masing field.
+      
+   4. Lalu, buatlah fungsi ```login_user``` yang berfungsi untuk mengautentikasi user ketika melakukan login.
+      ```
+      def login_user(request):
+          if request.method == 'POST':
+              form = AuthenticationForm(data=request.POST)
+      
+              if form.is_valid():
+                  user = form.get_user()
+                  login(request, user)
+                  response = HttpResponseRedirect(reverse("main:show_main"))
+                  response.set_cookie('last_login', str(datetime.datetime.now()))
+                  messages.success(request, 'Login berhasil!')
+                  return response
+              else:
+                  messages.error(request, 'Wrong username or password!')
+          return render(request, 'login.html')
+      ```
+      Fungsi ini menangani proses login user melalui method ```POST``` yang nantinya akan dibuat instance dari AuthenticationForm dengan data yang dikirimkan. Setelah memvalidasi form, fungsi mengambil objek user dan melakukan login menggunakan ```login(request, user)```, kemudian membuat respon ```redirect``` ke halaman utama aplikasi sambil menetapkan cookie untuk mencatat waktu login terakhir dan mengirimkan pesan sukses kepada user. Jika form tidak valid, user akan diberi tahu tentang kesalahan pada kredensial yang dimasukkan.
+
+   5. 
+
 # Tugas 3: Implementasi Form dan Data Delivery pada Django
 
 Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-poin dalam checklist:
@@ -80,9 +133,9 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       ```
       Potongan code ini memiliki arti sebagai berikut.
       - Form ini di-render dengan method POST dan dapat menangani file yang diunggah karena menggunakan ```enctype="multipart/form-data"```. Form yang dirender mencakup field-field seperti ```name```, ```price```, ```description```, ```category```, dan ```image``` yang sudah didefinisikan di ProductForm.
-      - Pengguna mengisi semua field dalam form, dan saat tombol submit ```Add Product Form``` diklik, semua data form (termasuk file yang diunggah jika ada) dikirim ke server melalui metode ```POST```.
+      - user mengisi semua field dalam form, dan saat tombol submit ```Add Product Form``` diklik, semua data form (termasuk file yang diunggah jika ada) dikirim ke server melalui metode ```POST```.
       - Saat form disubmit, form akan dikirim ke URL yang sama (jika tidak ada action pada form). Data yang dikirimkan akan divalidasi di view (```create_product_entry```) menggunakan ```form.is_valid()```.
-      - CSRF token memastikan bahwa form dikirim oleh pengguna yang sah dan tidak dari sumber berbahaya. Django akan memeriksa apakah CSRF token yang dikirimkan cocok dengan token yang diharapkan.
+      - CSRF token memastikan bahwa form dikirim oleh user yang sah dan tidak dari sumber berbahaya. Django akan memeriksa apakah CSRF token yang dikirimkan cocok dengan token yang diharapkan.
       - Di view Django, jika form valid, data akan disimpan ke database dengan memanggil ```form.save()```.
       
    7. Dengan berhasilnya pengisian pada form yang telah dibuat, maka data produk akan disimpan di dalam database. Saya dapat mengaksesnya apabila sekiranya sewaktu-waktu dibutuhkan.
@@ -178,7 +231,7 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
 
 ##  Menurutmu, mana yang lebih baik antara XML dan JSON? Mengapa JSON lebih populer dibandingkan XML?
 
-   Menurut saya JSON lebih baik dibandingkan dengan XML karena JSON memiliki readability dan struktur data yang sederhana sehingga lebih mudah untuk dibaca. Tidak seperti JSON, XML mempunyai struktur data yang cukup kompleks serta penggunaan tag pembuka dan tag penutup yang membuat isi file menjadi lebih panjang sehingga cenderung sulit untuk dibaca. Selain itu, JSON kompatibel dengan Javascript, artinya JSON dapat digunakan langsung di Javascript tanpa adanya konversi tambahan. JSON juga lebih mudah di-serialize karena banyak built-in yang mendukung penanganan JSON pada programming language.
+   Menurut saya JSON lebih baik dibandingkan dengan XML karena JSON memiliki readability dan struktur data yang sederhana sehingga lebih mudah untuk dibaca. Tidak seperti JSON, XML mempunyai struktur data yang cukup kompleks serta useran tag pembuka dan tag penutup yang membuat isi file menjadi lebih panjang sehingga cenderung sulit untuk dibaca. Selain itu, JSON kompatibel dengan Javascript, artinya JSON dapat digunakan langsung di Javascript tanpa adanya konversi tambahan. JSON juga lebih mudah di-serialize karena banyak built-in yang mendukung penanganan JSON pada programming language.
    
 ##  Jelaskan fungsi dari method is_valid() pada form Django dan mengapa kita membutuhkan method tersebut?
 
@@ -186,7 +239,7 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
    
 ##  Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
 
-   Penggunaan ```csrf_token``` berfungsi untuk memastikan bahwa request yang diberikan pada app dikirimkan oleh user yang sah dan bukan dari pihak lain. Ini artinya ```csrf_token``` dapat mencegah terjadinya serangan CSRF(Cross Site Request Forgery).
+   useran ```csrf_token``` berfungsi untuk memastikan bahwa request yang diberikan pada app dikirimkan oleh user yang sah dan bukan dari pihak lain. Ini artinya ```csrf_token``` dapat mencegah terjadinya serangan CSRF(Cross Site Request Forgery).
    
    ![image](https://github.com/user-attachments/assets/f66f58cd-02ca-4f41-89f1-1979315418a5)
 
