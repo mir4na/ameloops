@@ -53,9 +53,22 @@
                   messages.error(request, 'Wrong username or password!')
           return render(request, 'login.html')
       ```
-      Fungsi ini menangani proses login user melalui method ```POST``` yang nantinya akan dibuat instance dari AuthenticationForm dengan data yang dikirimkan. Setelah memvalidasi form, fungsi mengambil objek user dan melakukan login menggunakan ```login(request, user)```, kemudian membuat respon ```redirect``` ke halaman utama aplikasi sambil menetapkan cookie untuk mencatat waktu login terakhir dan mengirimkan pesan sukses kepada user. Jika form tidak valid, user akan diberi tahu tentang kesalahan pada kredensial yang dimasukkan.
+      Fungsi ini menangani proses login user melalui method ```POST``` yang nantinya akan dibuat instance dari AuthenticationForm dengan data yang dikirimkan. Setelah memvalidasi form, fungsi mengambil objek user dan melakukan login menggunakan ```login(request, user)```, kemudian membuat respons ```redirect``` ke halaman utama aplikasi sambil menetapkan cookie untuk mencatat waktu login terakhir dan mengirimkan pesan sukses kepada user. Jika form tidak valid, user akan diberi tahu tentang kesalahan pada kredensial yang dimasukkan.
 
-   5. 
+   5. Setelah membuat fungsi untuk register dan login, buatlah fungsi ```logout_user``` untuk mekanisme logout user.
+      ```
+      from django.contrib.auth.decorators import login_required
+      
+      @login_required(login_url='/login')
+      def logout_user(request):
+          logout(request)
+          response = HttpResponseRedirect(reverse('main:login'))
+          response.delete_cookie('last_login')
+          return response
+      ```
+      Fungsi ```logout_user``` adalah view yang dilindungi oleh decorator ```login_required```, memastikan hanya user yang sudah login yang dapat mengaksesnya. Ketika fungsi ini dipanggil, ia memanggil ```logout(request)``` untuk mengeluarkan user dari sesi, kemudian membuat objek ```HttpResponseRedirect``` yang mengarahkan user kembali ke halaman login menggunakan ```reverse('main:login')```. Selanjutnya, code akan menghapus cookie last_login dari browser lalu mengembalikan respons tersebut agar user diarahkan ke halaman login setelah logout.
+
+   6. 
 
 # Tugas 3: Implementasi Form dan Data Delivery pada Django
 
