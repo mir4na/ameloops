@@ -300,136 +300,125 @@
             </a>
         </div>
     </div>
-</div>
 
-<!-- Notification Bar -->
-<div id="notification-bar" class="notification-bar">
-    <span id="notification-message"></span>
-    <div class="notification-buttons">
-        <button class="yes" onclick="confirmAddToCart()">Yes</button>
-        <button class="no" onclick="hideNotification()">No</button>
+    <!-- Notification Bar -->
+    <div id="notification-bar" class="notification-bar">
+        <span id="notification-message"></span>
+        <div class="notification-buttons">
+            <button class="yes">Yes</button>
+            <button class="no">No</button>
+        </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const sliderInner = document.querySelector('.categories-slider-inner');
-        const categories = document.querySelector('.categories');
-        const prevBtn = document.querySelector('.slide-btn.prev');
-        const nextBtn = document.querySelector('.slide-btn.next');
-        const categoryWidth = document.querySelector('.category').offsetWidth;
-        const visibleCount = Math.floor(sliderInner.offsetWidth / categoryWidth);
-        let currentIndex = 0;
+    // Categories slider functionality
+    const categoriesSlider = document.querySelector('.categories-slider-inner');
+    const prevBtn = document.querySelector('.prev');
+    const nextBtn = document.querySelector('.next');
+    const categories = document.querySelectorAll('.category');
+    let currentCategoryIndex = 0;
 
-        function updateSlider() {
-            const offset = -currentIndex * categoryWidth;
-            categories.style.transform = `translateX(${offset}px)`;
+    function updateCategoryPosition() {
+        const slideAmount = categories[0].offsetWidth + 10; // Include margin
+        categoriesSlider.style.transform = `translateX(${-currentCategoryIndex * slideAmount}px)`;
+    }
+
+    nextBtn.addEventListener('click', () => {
+        if (currentCategoryIndex < categories.length - 1) {
+            currentCategoryIndex++;
+            updateCategoryPosition();
         }
+    });
 
-        nextBtn.addEventListener('click', function() {
-            currentIndex = Math.min(currentIndex + 1, categories.children.length - visibleCount);
-            updateSlider();
-        });
-
-        prevBtn.addEventListener('click', function() {
-            currentIndex = Math.max(currentIndex - 1, 0);
-            updateSlider();
-        });
-
-        updateSlider();
-
-        const categoryButtons = document.querySelectorAll('.category');
-        const products = document.querySelectorAll('.product');
-
-        categoryButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const category = button.dataset.category;
-
-                categoryButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-
-                products.forEach((product, index) => {
-                    product.style.animation = 'none';
-                    product.offsetHeight;
-                    if (category === 'all' || product.dataset.category === category) {
-                        product.style.display = 'flex';
-                        product.style.animation = `fadeInDown 0.5s ease forwards ${index * 0.1}s`;
-                    } else {
-                        product.style.display = 'none';
-                    }
-                });
-            });
-        });
-
-        // Add click event listener to products
-        let currentProductId = null;
-
-        function showNotification(productId, productName) {
-            currentProductId = productId;
-            const notificationBar = document.getElementById('notification-bar');
-            const notificationMessage = document.getElementById('notification-message');
-            notificationMessage.textContent = `Add ${productName} to cart?`;
-            notificationBar.classList.add('show');
+    prevBtn.addEventListener('click', () => {
+        if (currentCategoryIndex > 0) {
+            currentCategoryIndex--;
+            updateCategoryPosition();
         }
+    });
 
-        function hideNotification() {
-            const notificationBar = document.getElementById('notification-bar');
-            notificationBar.classList.remove('show');
-            currentProductId = null;
-        }
-
-        function confirmAddToCart() {
-            if (currentProductId) {
-                fetch(`/add-to-cart/${currentProductId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken'),
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status === 'success') {
-                        alert(data.message);
-                    } else {
-                        alert('Failed to add to cart: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('There was an error processing your request. Please try again.');
-                });
-            }
-            hideNotification();
-        }
-
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+    // Category click functionality
+    categories.forEach(category => {
+        category.addEventListener('click', function() {
+            categories.forEach(cat => cat.classList.remove('active'));
+            category.classList.add('active');
+            const selectedCategory = category.dataset.category;
+            document.querySelectorAll('.product').forEach(product => {
+                if (selectedCategory === 'all' || product.dataset.category === selectedCategory) {
+                    product.style.display = 'flex';
+                } else {
+                    product.style.display = 'none';
                 }
-            }
-            return cookieValue;
-        }
-
-        products.forEach(product => {
-            product.addEventListener('click', function() {
-                const productId = this.dataset.productId;
-                const productName = this.dataset.productName;
-                showNotification(productId, productName);
             });
         });
     });
+
+    // Notification Bar Functionality
+    const notificationBar = document.getElementById('notification-bar');
+    const notificationMessage = document.getElementById('notification-message');
+    let currentProductId = null;
+
+    function showNotification(productId, productName) {
+        currentProductId = productId;
+        notificationMessage.textContent = `Add ${productName} to cart?`;
+        notificationBar.classList.add('show');
+    }
+
+    function hideNotification() {
+        notificationBar.classList.remove('show');
+    }
+
+    const yesButton = document.querySelector('.yes');
+    const noButton = document.querySelector('.no');
+
+    yesButton.addEventListener('click', () => {
+        fetch(`/add-to-cart/${currentProductId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productId: currentProductId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            hideNotification();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('There was an error processing your request. Please try again.');
+            hideNotification();
+        });
+    });
+
+    noButton.addEventListener('click', hideNotification);
+
+    // Add event listener to products
+    const products = document.querySelectorAll('.product');
+    products.forEach(product => {
+        product.addEventListener('click', function() {
+            const productId = product.dataset.productId;
+            const productName = product.dataset.productName;
+            showNotification(productId, productName);
+        });
+    });
+
+    // CSRF Token helper function
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 </script>
 {% endblock %}
