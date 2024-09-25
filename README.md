@@ -20,7 +20,9 @@
       - ```messages```: Ini adalah modul dari Django untuk menampilkan pesan kepada user, misalnya, setelah berhasil login, mendaftar, atau ketika terjadi kesalahan. Modul ini juga dapat digunakan untuk kebutuhan debugging.
       - ```datetime```: Modul datetime digunakan untuk bekerja dengan tanggal dan waktu. Pada tugas 4, modul ini berfungsi untuk mencatat waktu terakhir login dari user.
         
-   3. Buatlah fungsi ```register_user``` yang berfungsi untuk melakukan registrasi dan menambah data user ketika telah didaftarkan.
+   3. Buatlah berkas HTML baru yang bernama ```register.html``` dan ```login.html``` dan biarkan pagenya kosong terlebih dahulu.
+        
+   4. Buatlah fungsi ```register_user``` yang berfungsi untuk melakukan registrasi dan menambah data user ketika telah didaftarkan.
       ```
       def register_user(request):
           if request.method == 'POST':
@@ -36,7 +38,7 @@
       ```
       Fungsi ini menangani pendaftaran user dengan memvalidasi input (```is_valid()```), menyimpan user baru jika data valid dengan method ```POST```, memberikan pesan kepada user (```messages```), dan mengarahkan mereka ke halaman login (```redirect```). Jika ada kesalahan dalam input, maka akan muncul pesan "Wrong input!" tanpa penghapusan input pada masing-masing field.
       
-   4. Lalu, buatlah fungsi ```login_user``` yang berfungsi untuk mengautentikasi user ketika melakukan login.
+   5. Lalu, buatlah fungsi ```login_user``` yang berfungsi untuk mengautentikasi user ketika melakukan login.
       ```
       def login_user(request):
           if request.method == 'POST':
@@ -55,7 +57,7 @@
       ```
       Fungsi ini menangani proses login user melalui method ```POST``` yang nantinya akan dibuat instance dari AuthenticationForm dengan data yang dikirimkan. Setelah memvalidasi form, fungsi mengambil objek user dan melakukan login menggunakan ```login(request, user)```, kemudian membuat respons ```redirect``` ke halaman utama aplikasi sambil menetapkan cookie untuk mencatat waktu login terakhir dan mengirimkan pesan sukses kepada user. Jika form tidak valid, user akan diberi tahu tentang kesalahan pada kredensial yang dimasukkan.
 
-   5. Setelah membuat fungsi untuk register dan login, buatlah fungsi ```logout_user``` untuk mekanisme logout user.
+   6. Setelah membuat fungsi untuk register dan login, buatlah fungsi ```logout_user``` untuk mekanisme logout user.
       ```
       from django.contrib.auth.decorators import login_required
       
@@ -68,7 +70,198 @@
       ```
       Fungsi ```logout_user``` adalah view yang dilindungi oleh decorator ```login_required```, memastikan hanya user yang sudah login yang dapat mengaksesnya. Ketika fungsi ini dipanggil, ia memanggil ```logout(request)``` untuk mengeluarkan user dari sesi, kemudian membuat objek ```HttpResponseRedirect``` yang mengarahkan user kembali ke halaman login menggunakan ```reverse('main:login')```. Selanjutnya, code akan menghapus cookie last_login dari browser lalu mengembalikan respons tersebut agar user diarahkan ke halaman login setelah logout.
 
-   6. 
+   7. Pergi ke ```urls.py``` untuk mengatur routing mengenai login, register, dan logout.
+      ```
+      path('login/', views.login_user, name='login'),
+      path('register/', views.register_user, name='register'),
+      path('logout/', views.logout_user, name='logout'),
+      ```
+      
+   8. Setelah mengatur routing pada ```urls.py```, implementasikan codenya pada ```register.html``` dan ```login.html``` pada direktori ```main```.
+      ```
+      ...
+      <!-- login.html -->
+      <h1 class="login-title">Login</h1>
+
+        <form method="POST" action="" class="login-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+      ...
+      ```
+      ```
+      ...
+      <!-- register.html -->
+      <h1 class="register-title">Register</h1>
+
+        <form method="POST" action="" class="register-form">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+            </div>
+            {% endfor %}
+            <button type="submit" class="register-btn">Register</button>
+        </form>
+      ...
+      ```
+
+   9. Jalankan ```python manage.py runserver``` pada terminal lalu cek apakah code sudah berjalan dengan benar atau belum.
+
+## Membuat dua akun pengguna dengan masing-masing tiga dummy data menggunakan model yang telah dibuat pada aplikasi sebelumnya untuk setiap akun di lokal.
+
+   1. Membuat dua akun pengguna sebagai dummy data dengan pergi ke page register, lalu login pada page ```login```.
+      ![image](https://github.com/user-attachments/assets/80696e62-c1e5-4556-bc89-0ae4ba70df36)
+      ![image](https://github.com/user-attachments/assets/cee9d038-7092-48c2-a673-2dae7db72c61)
+      Ini tampilan ketika user sudah login, lalu pergi ke halaman ```cart```dan belum memasukkan produk ke dalam keranjang (artinya belum ada data input produk untuk dimasukkan dalam cart)
+      ![image](https://github.com/user-attachments/assets/621751d9-ce9f-4c2b-b170-b0ae0cb09acb)
+
+   2. Lalu coba tambahkan 3 produk ke dalam cart dengan menggunakan user yang saat ini sedang login.
+      ![image](https://github.com/user-attachments/assets/254cbbed-11ad-4c53-a108-99cbec3cd50c)
+
+   3. Berikut hasil penambahan 3 product ke dalam cart pada user ```fvfvf4f4```
+      ![image](https://github.com/user-attachments/assets/dad0c8f1-9cfb-4621-af59-4e315e47e7f2)
+      Ini artinya pembuatan tiga dummy data pada user account telah berhasil.
+
+   4. Sekarang, coba buat lagi akun baru, tambahkan 3 product ke dalam cart, lalu bandingkan dengan akun sebelumnya.
+      ![image](https://github.com/user-attachments/assets/42acf93d-e3f2-4c1c-9f59-6b26727e8224)
+      ![image](https://github.com/user-attachments/assets/ce9e1591-bb18-4562-8989-e87ab436d779)
+      ![image](https://github.com/user-attachments/assets/165a1d0a-92de-46e2-b9f3-7da8de8a1488)
+      berikut hasilnya:
+      ![image](https://github.com/user-attachments/assets/23645a78-909a-41da-a079-8c3d4d7a3e4b)
+
+   5. Bandingkan hasil penambahan produk pada masing-masing akun. Ini artinya setiap akun memiliki data penambahan product yang berbeda. Maka pembuatan dua akun user dengan masing-masing tiga dummy data telah berhasil.
+
+## Menghubungkan model Product dengan User.
+
+   1. Untuk menghubungkan model Product dengan User, maka pertama pergi ke models.py dan tambahkan line code berikut di bagian atas code.
+      ```
+      from django.contrib.auth.models import User
+      ```
+      ```User``` dari ```django.contrib.auth.models``` adalah model default Django yang mewakili user di aplikasi Django.
+      
+   2. Disini saya membuat suatu model baru bernama ```Cart``` yang berfungsi untuk menyimpan product yang dimasukkan ke dalam keranjang pada masing-masing user. Berikut potongan codenya:
+      ```
+      ...
+      class Cart(models.Model):
+          user = models.OneToOneField(User, on_delete=models.CASCADE)
+      ...
+      class CartItem(models.Model):
+          id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+          cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+      ...
+      ```
+      Relasi ```OneToOneField``` ke model User. Ini berarti setiap user hanya dapat memiliki satu keranjang, dan keranjang ini terhubung langsung ke user yang bersangkutan. Jika user dihapus, maka keranjang juga ikut dihapus (```on_delete=models.CASCADE```). Lalu, model ```CartItem``` digunakan untuk menyimpan setiap item yang ada di dalam keranjang belanja,
+      
+   3. Sekarang, pergi ke ```views.py``` yang pada direktori main, buatlah suatu fungsi yang berfungsi untuk menambahkan produk ke keranjang masing-masing usernya.
+      ```
+      @require_POST
+      @login_required(login_url='/login')
+      def add_to_cart(request, product_id):
+          product = get_object_or_404(Product, id=product_id)
+          cart, created = Cart.objects.get_or_create(user=request.user)
+          cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
+          return JsonResponse({'status': 'success', 'message': f'{product.name} added to cart'})
+       ```
+      Decorator ```@require_POST``` dan ```@login_required(login_url='/login')``` berfungsi untuk memastikan bahwa view hanya merespons permintaan HTTP POST dan memastikan bahwa hanya user yang sudah login dapat mengakses view ini. Jika user belum login, mereka akan diarahkan ke halaman login (```/login```). Lalu, fungsi ```get_or_create``` berfungsi untuk mendapatkan objek ```Cart``` yang dimiliki oleh user saat ini (```request.user```). Jika user belum memiliki keranjang, fungsi ini akan otomatis membuat keranjang baru untuk user. ```created``` adalah boolean yang menunjukkan apakah keranjang baru dibuat atau tidak. Jika keranjang sudah ada, ```created``` akan bernilai False, jika tidak, maka True. Fungsi ini juga mengembalikan respons dalam format JSON.
+
+   5. Lakukan migrasi model dengan ```python manage.py makemigrations``` yang dilanjutkan dengan ```python manage.py migrate```.
+      
+   6. Ketika terjadi error, hal yang biasanya saya lakukan adalah me-reset kembali model dan database dengan cara menghapusnya lalu melakukan migrasi ulang.  
+      
+## Menampilkan detail informasi pengguna yang sedang logged in seperti username dan menerapkan cookies seperti last login pada halaman utama aplikasi.
+
+   1. Untuk menampilkan detail informasi user yang sedang logged in, di sini saya sudah membuat ```navbar.html``` sebagai navigation bar pada app saya. Berikut potongan codenya.
+      ```
+      ...
+      {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'main:account' %}">Account</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'main:logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'main:login' %}">Sign in</a>
+                        </li>
+                        {% endif %}
+      ...
+      ```
+      Jadi, jika user belum login (user.is_authenticated bernilai False), akan menampilkan tautan Sign in yang mengarahkan pengguna ke halaman login. Namun, apabila user sudah login, maka pada tampilan page akan ditampilkan elemen dropdown di navbar dengan nama pengguna (```{{ user.username }}```). Berikut contoh gambarnya.
+      Sebelum login:
+      ![image](https://github.com/user-attachments/assets/8bc8d8a0-4aed-4648-8628-fe717f6a6a97)
+      Sesudah login:
+      ![image](https://github.com/user-attachments/assets/cac89a3d-7829-4b4c-9dff-fe0267d7f9b2)
+      Dengan adanya ini, maka artinya menampilkan detail informasi user yang sedang logged in telah berhasil.
+      
+   2. Lalu, pergi ke ```views.py``` yang berada pada direktori ```main```, lalu tambahkan fungsionalitas cookie yang bernama ```last_login``` di fungsi ```login_user``` untuk melihat kapan terakhir kali pengguna melakukan login.
+      ```
+      ...
+      if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            response = HttpResponseRedirect(reverse("main:show_main"))
+            response.set_cookie('last_login', str(datetime.datetime.now()))
+            messages.success(request, 'Login berhasil!')
+            return response
+        else:
+            messages.error(request, 'Wrong username or password!')
+      ...
+      ```
+      Apabila input valid dan user berhasil login, maka cookie bernama ```last_login``` diatur untuk menyimpan waktu login terakhir dengan nilai berupa string dari waktu saat ini (```datetime.datetime.now()```).
+
+   3. Selanjutnya, pada fungsi ```account_page```, tambahkan potongan kode ```'last_login': request.COOKIES['last_login']``` ke dalam variabel context.
+      ```
+      ...
+      context = {
+        'form': form,
+        'last_login': request.COOKIES.get('last_login'),
+       }
+      ...
+      ```
+      ```'last_login': request.COOKIES['last_login']``` berfungsi menambahkan informasi cookie ```last_login``` pada response yang akan ditampilkan pada account page.
+
+   4. Sesuaikan pada fungsi ```logout_user``` seperti berikut.
+         ```
+         def logout_user(request):
+             logout(request)
+             response = HttpResponseRedirect(reverse('main:login'))
+             response.delete_cookie('last_login')
+             return response
+         ```
+         ```response.delete_cookie('last_login')``` berfungsi untuk menghapus cookie pada ```last_login``` ketika user melakukan logout.
+
+   5. Tambahkan code HTML berikut untuk menampilkan waktu terakhir user melakukan login. Di sini saya menambahkannya di ```account.html```.
+         ```
+         ...
+         <p>Sesi terakhir login: {{ last_login }}</p>
+         ...
+         ```
+         
+   6. Jalankan ```python manage.py runserver```.
+   
+## Apa perbedaan antara HttpResponseRedirect() dan redirect()
+
+## Jelaskan cara kerja penghubungan model Product dengan User!
+
+## Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.
+
+## Bagaimana Django mengingat pengguna yang telah login? Jelaskan kegunaan lain dari cookies dan apakah semua cookies aman digunakan?
+   
 
 # Tugas 3: Implementasi Form dan Data Delivery pada Django
 
