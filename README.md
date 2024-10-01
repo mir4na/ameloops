@@ -12,12 +12,33 @@
 
    2. Buat object baru bernama ```Cart``` dan ```CartItem```.
       ```
+      class Cart(models.Model):
+          id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+          user = models.OneToOneField(User, on_delete=models.CASCADE)
+          created_at = models.DateTimeField(auto_now_add=True)
+          updated_at = models.DateTimeField(auto_now=True)
       
+          def __str__(self):
+              return f"Cart for {self.user.username}"
+
+      class CartItem(models.Model):
+          id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+          cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+          product = models.ForeignKey(Product, on_delete=models.CASCADE)
+          quantity = models.PositiveIntegerField(default=1)
+      
+          def __str__(self):
+              return f"{self.quantity} of {self.product.name}"
+      
+          @property
+          def total_price(self):
+              return self.quantity * self.product.price
       ```
+      Potongan code di atas mendefinisikan dua model dalam framework Django untuk sistem keranjang belanja. Model ```Cart``` memiliki atribut seperti ID unik, relasi satu-ke-satu dengan pengguna (User), serta waktu pembuatan dan pembaruan. Model ini merepresentasikan keranjang belanja yang dimiliki setiap pengguna. Di sisi lain, model CartItem menghubungkan produk tertentu dengan keranjang belanja melalui relasi banyak-ke-satu, dan menyimpan jumlah produk yang dimasukkan. Model ini juga memiliki properti total_price yang menghitung total harga berdasarkan jumlah dan harga produk. Metode ```__str__``` pada kedua model memberikan representasi string yang informatif untuk objek tersebut.
    
-   1. Pergi ke ```views.py``` pada direktori ```main```.
+   3. Setelah itu, pergi ke ```views.py``` pada direktori ```main```.
       
-   2. Implementasikan fungsi untuk edit product. Disini saya mengimplementasikan edit sebagai "update" kuantitas dari jumlah product yang ada pada cart user.
+   4. Implementasikan fungsi untuk edit product. Disini saya mengimplementasikan edit sebagai "update" kuantitas dari jumlah product yang ada pada cart user.
       ```
       @login_required(login_url='/login')
       def edit_product(request, cart_item_id):
@@ -33,17 +54,17 @@
       ```
       Fungsi ini memungkinkan user untuk mengedit kuantitas item dalam cart belanja mereka dengan memvalidasi input dan memberikan umpan balik melalui pesan jika kuantitas tidak valid. Jika berhasil, user akan diarahkan kembali ke cart page mereka.
 
-      3. Lalu, implementasikan fungsi untuk remove product.
-         ```
-         @login_required(login_url='/login')
-         def remove_from_cart(request, cart_item_id):
-             cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
-             cart_item.delete()
-             return HttpResponseRedirect(reverse('main:cart'))
-         ```
-         Fungsi ini memungkinkan user untuk menghapus item tertentu dari cart belanja mereka. Setelah penghapusan, user diarahkan kembali ke cart page. Proses ini mencakup pemeriksaan apakah user sudah login dan validasi keberadaan item yang ingin dihapus.
+   5. Lalu, implementasikan fungsi untuk remove product.
+      ```
+      @login_required(login_url='/login')
+      def remove_from_cart(request, cart_item_id):
+          cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
+          cart_item.delete()
+          return HttpResponseRedirect(reverse('main:cart'))
+      ```
+      Fungsi ini memungkinkan user untuk menghapus item tertentu dari cart belanja mereka. Setelah penghapusan, user diarahkan kembali ke cart page. Proses ini mencakup pemeriksaan apakah user sudah login dan validasi keberadaan item yang ingin dihapus.
 
-      4. 
+
          
 # Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
 
