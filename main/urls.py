@@ -10,13 +10,12 @@ urlpatterns = [
     path('logout/', views.logout_user, name='logout'),
     path('products/', views.products_page, name='products'),
 
-
     path('cart/', views.cart_page, name='cart'),
     path('add-to-cart/<uuid:product_id>/', views.add_to_cart, name='add_to_cart'),
-    path('remove-from-cart/<uuid:item_id>/', views.remove_from_cart, name='remove_from_cart'),
-    path('update-cart-item/<uuid:item_id>/', views.update_cart_item, name='update_cart_item'),
+    path('remove-from-cart/<uuid:cart_item_id>/', views.remove_from_cart, name='remove_from_cart'),
+    path('edit-cart-item/<uuid:cart_item_id>/', views.edit_product, name='edit_cart_item'),
 
-    path('account/product-entry/', views.create_product_entry, name='create_product_entry'),
+    path('account/product-entry/', views.create_product_entry, name='create_product_entry') ,
     path('account/add-category/', views.create_category, name='create_category'),
     path('account/', views.account_page, name='account'),
 
@@ -29,4 +28,3 @@ urlpatterns = [
     path('category_json/<str:id>/', views.category_json_by_id, name='category_json_by_id'),
     path('category_xml/<str:id>/', views.category_xml_by_id, name='category_xml_by_id'),
 ]
-

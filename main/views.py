@@ -71,11 +71,12 @@ def products_page(request):
 
 @login_required(login_url='/login')
 def cart_page(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    items = cart.items.all()
-    total = sum(item.total_price for item in items)
+    cart = get_object_or_404(Cart, user=request.user)
+    cart_items = CartItem.objects.filter(cart=cart)
+    total = sum(item.total_price for item in cart_items)
+    
     context = {
-        'cart_items': items,
+        'cart_items': cart_items,
         'total': total,
     }
     return render(request, 'cart.html', context)
@@ -86,29 +87,8 @@ def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart, created = Cart.objects.get_or_create(user=request.user)
     cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
-    
-    if not item_created:
-        cart_item.quantity += 1
-        cart_item.save()
 
     return JsonResponse({'status': 'success', 'message': f'{product.name} added to cart'})
-
-@login_required(login_url='/login')
-def remove_from_cart(request, item_id):
-    cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
-    cart_item.delete()
-    return redirect('main:cart_page')
-
-@login_required(login_url='/login')
-def update_cart_item(request, item_id):
-    cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
-    quantity = int(request.POST.get('quantity', 1))
-    if quantity > 0:
-        cart_item.quantity = quantity
-        cart_item.save()
-    else:
-        cart_item.delete()
-    return redirect('main:cart_page')
 
 @login_required(login_url='/login')
 def account_page(request):
@@ -130,6 +110,24 @@ def account_page(request):
         'last_login': request.COOKIES.get('last_login'),
     }
     return render(request, 'account.html', context)
+
+@login_required(login_url='/login')
+def remove_from_cart(request, cart_item_id):
+    cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
+    cart_item.delete()
+    return HttpResponseRedirect(reverse('main:cart'))
+
+@login_required(login_url='/login')
+def edit_product(request, cart_item_id):
+    cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
+    if request.method == 'POST':
+        new_quantity = int(request.POST.get('quantity', 1))
+        if new_quantity > 0 and new_quantity <= cart_item.product.stock:
+            cart_item.quantity = new_quantity
+            cart_item.save()
+        else:
+            messages.error(request, 'Invalid quantity.')
+    return HttpResponseRedirect(reverse('main:cart'))
 
 def create_product_entry(request):
     form = ProductForm(request.POST or None, request.FILES or None)
