@@ -34,9 +34,9 @@
           def total_price(self):
               return self.quantity * self.product.price
       ```
-      Potongan code di atas mendefinisikan dua model dalam framework Django untuk sistem keranjang belanja. Model ```Cart``` memiliki atribut seperti ID unik, relasi satu-ke-satu dengan pengguna (User), serta waktu pembuatan dan pembaruan. Model ini merepresentasikan keranjang belanja yang dimiliki setiap pengguna. Di sisi lain, model CartItem menghubungkan produk tertentu dengan keranjang belanja melalui relasi banyak-ke-satu, dan menyimpan jumlah produk yang dimasukkan. Model ini juga memiliki properti total_price yang menghitung total harga berdasarkan jumlah dan harga produk. Metode ```__str__``` pada kedua model memberikan representasi string yang informatif untuk objek tersebut.
+      Potongan code di atas mendefinisikan dua model dalam framework Django untuk sistem cart belanja. Model ```Cart``` memiliki atribut seperti ID unik, relasi one-to-one dengan user, serta waktu pembuatan dan pembaruan. Model ini merepresentasikan cart belanja yang dimiliki setiap user. Di sisi lain, model CartItem menghubungkan produk tertentu dengan cart belanja melalui relasi many-to-one, dan menyimpan jumlah produk yang dimasukkan. Model ini juga memiliki properti ```total_price``` yang menghitung total harga berdasarkan jumlah dan harga produk. Metode ```__str__``` pada kedua model memberikan representasi string untuk objek tersebut.
    
-   3. Setelah itu, pergi ke ```views.py``` pada direktori ```main```.
+   3. Setelah membuat modelnya, pergi ke ```views.py``` pada direktori ```main```.
       
    4. Implementasikan fungsi untuk edit product. Disini saya mengimplementasikan edit sebagai "update" kuantitas dari jumlah product yang ada pada cart user.
       ```
@@ -64,6 +64,7 @@
       ```
       Fungsi ini memungkinkan user untuk menghapus item tertentu dari cart belanja mereka. Setelah penghapusan, user diarahkan kembali ke cart page. Proses ini mencakup pemeriksaan apakah user sudah login dan validasi keberadaan item yang ingin dihapus.
 
+   6. 
 
          
 # Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
@@ -184,7 +185,7 @@
    1. Membuat dua akun pengguna sebagai dummy data dengan pergi ke page register, lalu login pada page ```login```.
       ![image](https://github.com/user-attachments/assets/80696e62-c1e5-4556-bc89-0ae4ba70df36)
       ![image](https://github.com/user-attachments/assets/cee9d038-7092-48c2-a673-2dae7db72c61)
-      Ini tampilan ketika user sudah login, lalu pergi ke halaman ```cart```dan belum memasukkan produk ke dalam keranjang (artinya belum ada data input produk untuk dimasukkan dalam cart)
+      Ini tampilan ketika user sudah login, lalu pergi ke halaman ```cart```dan belum memasukkan produk ke dalam cart (artinya belum ada data input produk untuk dimasukkan dalam cart)
       ![image](https://github.com/user-attachments/assets/621751d9-ce9f-4c2b-b170-b0ae0cb09acb)
 
    2. Lalu coba tambahkan 3 produk ke dalam cart dengan menggunakan user yang saat ini sedang login.
@@ -211,7 +212,7 @@
       ```
       ```User``` dari ```django.contrib.auth.models``` adalah model default Django yang mewakili user di aplikasi Django.
       
-   2. Disini saya membuat suatu model baru bernama ```Cart``` yang berfungsi untuk menyimpan product yang dimasukkan ke dalam keranjang pada masing-masing user. Berikut potongan codenya:
+   2. Disini saya membuat suatu model baru bernama ```Cart``` yang berfungsi untuk menyimpan product yang dimasukkan ke dalam cart pada masing-masing user. Berikut potongan codenya:
       ```
       ...
       class Cart(models.Model):
@@ -222,9 +223,9 @@
           cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
       ...
       ```
-      Relasi ```OneToOneField``` ke model User. Ini berarti setiap user hanya dapat memiliki satu keranjang, dan keranjang ini terhubung langsung ke user yang bersangkutan. Jika user dihapus, maka keranjang juga ikut dihapus (```on_delete=models.CASCADE```). Lalu, model ```CartItem``` digunakan untuk menyimpan setiap item yang ada di dalam keranjang belanja,
+      Relasi ```OneToOneField``` ke model User. Ini berarti setiap user hanya dapat memiliki satu cart, dan cart ini terhubung langsung ke user yang bersangkutan. Jika user dihapus, maka cart juga ikut dihapus (```on_delete=models.CASCADE```). Lalu, model ```CartItem``` digunakan untuk menyimpan setiap item yang ada di dalam cart belanja,
       
-   3. Sekarang, pergi ke ```views.py``` yang pada direktori main, buatlah suatu fungsi yang berfungsi untuk menambahkan produk ke keranjang masing-masing usernya.
+   3. Sekarang, pergi ke ```views.py``` yang pada direktori main, buatlah suatu fungsi yang berfungsi untuk menambahkan produk ke cart masing-masing usernya.
       ```
       @require_POST
       @login_required(login_url='/login')
@@ -234,7 +235,7 @@
           cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
           return JsonResponse({'status': 'success', 'message': f'{product.name} added to cart'})
        ```
-      Decorator ```@require_POST``` dan ```@login_required(login_url='/login')``` berfungsi untuk memastikan bahwa view hanya merespons permintaan HTTP POST dan memastikan bahwa hanya user yang sudah login dapat mengakses view ini. Jika user belum login, mereka akan diarahkan ke halaman login (```/login```). Lalu, fungsi ```get_or_create``` berfungsi untuk mendapatkan objek ```Cart``` yang dimiliki oleh user saat ini (```request.user```). Jika user belum memiliki keranjang, fungsi ini akan otomatis membuat keranjang baru untuk user. ```created``` adalah boolean yang menunjukkan apakah keranjang baru dibuat atau tidak. Jika keranjang sudah ada, ```created``` akan bernilai False, jika tidak, maka True. Fungsi ini juga mengembalikan respons dalam format JSON.
+      Decorator ```@require_POST``` dan ```@login_required(login_url='/login')``` berfungsi untuk memastikan bahwa view hanya merespons permintaan HTTP POST dan memastikan bahwa hanya user yang sudah login dapat mengakses view ini. Jika user belum login, mereka akan diarahkan ke halaman login (```/login```). Lalu, fungsi ```get_or_create``` berfungsi untuk mendapatkan objek ```Cart``` yang dimiliki oleh user saat ini (```request.user```). Jika user belum memiliki cart, fungsi ini akan otomatis membuat cart baru untuk user. ```created``` adalah boolean yang menunjukkan apakah cart baru dibuat atau tidak. Jika cart sudah ada, ```created``` akan bernilai False, jika tidak, maka True. Fungsi ini juga mengembalikan respons dalam format JSON.
 
    5. Lakukan migrasi model dengan ```python manage.py makemigrations``` yang dilanjutkan dengan ```python manage.py migrate```.
       
@@ -338,7 +339,7 @@
         return self.name
    ```
    - Model Product memiliki berbagai field, seperti ```name```, ```price```, ```description```, ```stock```, dan ```image```, untuk menyimpan informasi tentang produk.
-   - Model ini memiliki hubungan dengan ```CartItem```. Model ```CartItem``` memiliki relasi ```ForeignKey``` ke model ```Product```, yang memungkinkan setiap item dalam keranjang belanja untuk terkait dengan satu produk tertentu. Dengan demikian, kita dapat menyimpan informasi produk yang ditambahkan ke keranjang dan kuantitasnya.
+   - Model ini memiliki hubungan dengan ```CartItem```. Model ```CartItem``` memiliki relasi ```ForeignKey``` ke model ```Product```, yang memungkinkan setiap item dalam cart belanja untuk terkait dengan satu produk tertentu. Dengan demikian, kita dapat menyimpan informasi produk yang ditambahkan ke cart dan kuantitasnya.
 
    Model CartItem.
    ```
@@ -355,8 +356,8 @@
     def total_price(self):
         return self.quantity * self.product.price
    ```
-   - Model CartItem memiliki field ```quantity``` yang berguna untuk menyimpan jumlah produk yang ditambahkan ke keranjang.
-   - Model ini memiliki hubungan dengan ```Cart``` dan ```Product```: Model ini memiliki dua relasi ```ForeignKey```, satu untuk cart yang menghubungkannya dengan model ```Cart```, dan satu lagi untuk product yang menghubungkannya dengan model ```Product```. Ini memungkinkan kita untuk menyimpan detail spesifik tentang produk dalam keranjang belanja dan jumlahnya.
+   - Model CartItem memiliki field ```quantity``` yang berguna untuk menyimpan jumlah produk yang ditambahkan ke cart.
+   - Model ini memiliki hubungan dengan ```Cart``` dan ```Product```: Model ini memiliki dua relasi ```ForeignKey```, satu untuk cart yang menghubungkannya dengan model ```Cart```, dan satu lagi untuk product yang menghubungkannya dengan model ```Product```. Ini memungkinkan kita untuk menyimpan detail spesifik tentang produk dalam cart belanja dan jumlahnya.
 
    Model Cart.
    ```
@@ -369,17 +370,17 @@
        def __str__(self):
            return f"Cart for {self.user.username}"
    ```
-   - Model Cart berfungsi sebagai keranjang belanja user. Model ini memiliki field ```user```, yang menggunakan ```OneToOneField``` untuk menghubungkan setiap keranjang belanja dengan satu user. Ini berarti setiap user hanya dapat memiliki satu keranjang belanja.
-   - Model ini memiliki hubungan dengan ```CartItem```. Model ```Cart``` juga memiliki relasi ```ForeignKey``` dengan model ```CartItem```. Ini memungkinkan kita untuk mengaitkan beberapa item ke dalam satu keranjang. Dengan relasi ini, kita dapat menyimpan berbagai produk yang ditambahkan oleh user ke dalam keranjang.
+   - Model Cart berfungsi sebagai cart belanja user. Model ini memiliki field ```user```, yang menggunakan ```OneToOneField``` untuk menghubungkan setiap cart belanja dengan satu user. Ini berarti setiap user hanya dapat memiliki satu cart belanja.
+   - Model ini memiliki hubungan dengan ```CartItem```. Model ```Cart``` juga memiliki relasi ```ForeignKey``` dengan model ```CartItem```. Ini memungkinkan kita untuk mengaitkan beberapa item ke dalam satu cart. Dengan relasi ini, kita dapat menyimpan berbagai produk yang ditambahkan oleh user ke dalam cart.
 
    Penghubungan model ```Product```, ```CartItem```, ```Cart``` dengan User.
-   1. Membuat Keranjang untuk User: Ketika user mendaftar atau login, Django membuatkan entri baru di model ```Cart``` untuk user tersebut, jika belum ada. Hal ini menghubungkan user dengan keranjang belanja user tersebut.
+   1. Membuat cart untuk User: Ketika user mendaftar atau login, Django membuatkan entri baru di model ```Cart``` untuk user tersebut, jika belum ada. Hal ini menghubungkan user dengan cart belanja user tersebut.
 
-   2. Menambahkan Produk ke Keranjang: Ketika user menambahkan produk ke keranjang, aplikasi membuat entri baru di model ```CartItem```, yang menghubungkan produk yang dipilih dengan keranjang user. Jika produk sudah ada di keranjang, kuantitasnya akan diperbarui.
+   2. Menambahkan Produk ke cart: Ketika user menambahkan produk ke cart, aplikasi membuat entri baru di model ```CartItem```, yang menghubungkan produk yang dipilih dengan cart user. Jika produk sudah ada di cart, kuantitasnya akan diperbarui.
 
-   3. Mengambil Informasi Keranjang: Saat user ingin melihat keranjang belanja mereka, aplikasi dapat mengambil semua item dari model ```CartItem``` yang terkait dengan model ```Cart```, dan dari situ, kita bisa mengakses informasi produk yang relevan melalui relasi ```ForeignKey```.
+   3. Mengambil Informasi cart: Saat user ingin melihat cart belanja mereka, aplikasi dapat mengambil semua item dari model ```CartItem``` yang terkait dengan model ```Cart```, dan dari situ, kita bisa mengakses informasi produk yang relevan melalui relasi ```ForeignKey```.
 
-   4. Menghitung Total Harga: Model ```CartItem``` memiliki properti ```total_price``` yang menghitung harga total berdasarkan kuantitas dan harga produk. Ini memungkinkan aplikasi untuk menampilkan total biaya keranjang kepada user.
+   4. Menghitung Total Harga: Model ```CartItem``` memiliki properti ```total_price``` yang menghitung harga total berdasarkan kuantitas dan harga produk. Ini memungkinkan aplikasi untuk menampilkan total biaya cart kepada user.
 
 ## Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.
 
@@ -406,7 +407,7 @@
 
    Django mengingat user yang telah login menggunakan mekanisme sesi dan cookies. Saat user berhasil login, Django membuat session unik yang disimpan di backend, dan mengirimkan ID session ke browser user sebagai cookie. Cookie ini biasanya bernama ```sessionid```, digunakan oleh Django untuk mengidentifikasi user pada setiap request berikutnya. Setiap kali user mengirimkan request, Django memeriksa cookie session tersebut untuk mengambil informasi autentikasi dari backend session, memungkinkan sistem untuk mengenali apakah user sudah login dan siapa usernya. Session ini dapat diatur agar berakhir karena pengguna logout, browser ditutup, atau session kedaluwarsa.
 
-   Selain session, cookies memiliki berbagai kegunaan lain, seperti menyimpan preferensi user, seperti tema situs, bahasa yang dipilih, atau pengaturan tampilan. Cookies juga digunakan untuk melakukan tracking aktivitas user di berbagai page, yang bermanfaat untuk analitik mengenai personalisasi konten atau menampilkan iklan yang relevan. Selain itu, cookies mendukung fitur autentikasi berkelanjutan seperti "Remember Me," yang memungkinkan user tetap login saat mereka kembali ke situs tanpa harus melakukan login ulang. Dalam aplikasi e-commerce, cookies sering menyimpan informasi tentang item yang ditambahkan ke keranjang belanja, meskipun user belum login atau belum menyelesaikan pembelian.
+   Selain session, cookies memiliki berbagai kegunaan lain, seperti menyimpan preferensi user, seperti tema situs, bahasa yang dipilih, atau pengaturan tampilan. Cookies juga digunakan untuk melakukan tracking aktivitas user di berbagai page, yang bermanfaat untuk analitik mengenai personalisasi konten atau menampilkan iklan yang relevan. Selain itu, cookies mendukung fitur autentikasi berkelanjutan seperti "Remember Me," yang memungkinkan user tetap login saat mereka kembali ke situs tanpa harus melakukan login ulang. Dalam aplikasi e-commerce, cookies sering menyimpan informasi tentang item yang ditambahkan ke cart belanja, meskipun user belum login atau belum menyelesaikan pembelian.
 
    Tidak semua cookies aman. Cookies dapat dicegat oleh pihak ketiga jika situs tidak menggunakan protokol yang secure. Untuk melindunginya, maka yang dapat dilakukan yaitu menggunakan atribut ```Secure``` pada cookies untuk memastikan bahwa cookies hanya dikirim melalui koneksi yang aman. Selain itu, cookies yang disimpan di browser dapat dimodifikasi oleh user. Django menyimpan informasi autentikasi di server-side dan hanya menggunakan ID session di cookies. Risiko lainnya terdapat serangan Cross-Site Scripting (XSS), yang artinya script berbahaya dapat mencuri cookies. untuk mengurangi risiko ini, atribut ```HttpOnly``` dapat digunakan untuk mencegah akses JavaScript ke cookies, serta atribut ```SameSite``` untuk melindungi cookies dari serangan CSRF (Cross-Site Request Forgery). Selain itu, cookies harus memiliki masa berlaku yang terbatas (timeout) agar tidak tetap aktif setelah waktu tertentu.
    
