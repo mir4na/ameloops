@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/8059a8de-63a6-4372-ab7a-8956fd641297)- Nama: Muhammad Afwan Hafizh
+- Nama: Muhammad Afwan Hafizh
 - NPM: 2306208855
 - Kelas: PBP-F
 
@@ -259,8 +259,44 @@
       ![image](https://github.com/user-attachments/assets/36eba6b5-af0f-4bc4-b2a5-bbf3319a2cad)
 
       Versi mobile:
-      
-      
+      ![image](https://github.com/user-attachments/assets/67eb33dc-928e-480a-bcc5-4ba56850da62)
+
+## Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
+
+Dalam CSS, urutan prioritas pengambilan selector ditentukan oleh spesifisitas dan urutan penulisan. Berikut urutan prioritasnya:
+
+1. ```Inline CSS```: Gaya yang ditetapkan langsung dalam atribut style elemen HTML memiliki prioritas tertinggi.
+2. ```ID Selector```: Selector yang menggunakan ID memiliki spesifisitas lebih tinggi daripada class dan tag.
+3. ```Class```, ```Attribute```, dan ```Pseudo-class Selector```: Selector yang menggunakan class, atribut, dan pseudo-class memiliki prioritas menengah.
+4. ```Type Selector``` dan ```Pseudo-element Selector```: Selector berdasarkan nama elemen (misalnya div, p) dan pseudo-element (misalnya ::before, ::after) memiliki prioritas rendah.
+5. ```Universal Selector```: Selector universal (*) memiliki spesifisitas paling rendah dan hanya digunakan sebagai fallback.
+
+## Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design!
+
+Responsive design adalah konsep penting dalam pembuatan aplikasi web karena memungkinkan tampilan dan fungsi situs web menyesuaikan diri dengan berbagai ukuran layar dan device. Dengan banyaknya user yang mengakses internet menggunakan ponsel, penting bagi situs web untuk mengoptimalkan user experience, tidak peduli apakah mereka menggunakan ponsel, tablet, atau komputer. Responsive design juga meningkatkan readability pada content app, memudahkan navigasi, dan lain-lain.
+
+Contoh app yang telah menerapkan responsive design: Web SIAK-NG
+Contoh app yang belum menerapkan responsive design: Pacil Web Service
+
+## Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!
+
+1. - Margin adalah ruang di luar elemen, yang digunakan untuk memberikan jarak antara satu elemen dengan yang lainnya. Margin tidak mengubah ukuran elemen itu sendiri, tetapi memengaruhi posisinya.
+   - Cara mengimplementasikan: Gunakan properti CSS seperti ```margin: 10px;``` untuk memberikan margin sebesar 10 piksel di semua sisi elemen, atau menggunakan margin-top, margin-right, margin-bottom, dan margin-left untuk mengatur margin secara spesifik.
+
+2. - Border adalah garis yang mengelilingi elemen, memberikan batas visual. Ini dapat memiliki berbagai warna, lebar, dan gaya.
+   - Cara mengimplementasikan: Gunakan ```border: 2px solid black;``` untuk memberikan border dengan lebar 2 piksel, gaya solid, dan warna hitam. Kita juga dapat mengatur border pada sisi tertentu dengan menggunakan border-top, border-right, border-bottom, dan border-left.
+
+3. - Padding adalah ruang di dalam elemen, antara konten dan batas (border). Padding memberikan ruang agar isi elemen tidak langsung menyentuh border.
+   - Cara mengimplementasikan: Gunakan ```padding: 10px;``` untuk memberikan padding sebesar 10 piksel di semua sisi elemen, atau menggunakan padding-top, padding-right, padding-bottom, dan padding-left untuk mengatur padding secara spesifik.
+
+## Jelaskan konsep flex box dan grid layout beserta kegunaannya!
+
+1. - Flexbox: Flexbox adalah sistem tata letak satu dimensi yang memungkinkan elemen dalam kontainer disusun dalam baris atau kolom. Dengan menggunakan properti seperti ```flex-direction```, ```justify-content```, dan ```align-items```, kita dapat mengatur ruang dan perataan elemen dengan mudah.
+   - Kegunaan: Flexbox sangat membantu dalam membuat desain yang responsif, karena elemen dapat menyesuaikan ukuran dan posisinya sesuai dengan ruang yang ada. Selain itu, Flexbox ideal untuk perataan elemen dalam satu dimensi (baik horizontal maupun vertikal), sehingga sering digunakan untuk menu, toolbar, atau daftar.
+  
+2. - Grid Layout: Grid Layout adalah sistem tata letak dua dimensi yang memungkinkan pengembang untuk mengatur elemen dalam baris dan kolom sekaligus. Dengan menggunakan properti seperti ```grid-template-columns```, ```grid-template-rows```, dan ```grid-area```, kita dapat menciptakan tata letak yang lebih terstruktur dan kompleks.
+   - Kegunaan: Grid Layout sangat baik untuk membuat desain yang lebih rumit dan terorganisir, seperti tata letak halaman web, galeri foto, atau dashboard. Selain itu, Grid memberikan kontrol yang lebih besar terhadap penempatan elemen, memungkinkan pengembang menentukan ukuran dan posisi elemen dengan lebih akurat.
+
 # Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
 
    1. Aktifkan virtual environment, lalu pergi ke ```views.py``` pada direktori ```main```.
