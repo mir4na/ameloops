@@ -8,81 +8,191 @@
 
 {% block extra_head %}
 <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;600&family=Signika:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
-    .content-container {
-        max-width: 800px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    body {
+        padding-top: 60px; /* Add padding to account for the fixed navbar */
+    }
+    
+    .cart-content {
+        background: linear-gradient(135deg, #00FFFF, #FFFFFF, #FFFF00);
+        min-height: calc(100vh - 60px); /* Subtract the navbar height */
+        font-family: 'Dosis', sans-serif;
+    }
+
+    .cart-container {
+        max-width: 1200px;
+        margin: 0 auto;
         padding: 2rem;
     }
 
-    .table {
+    .cart-title {
         font-family: 'Signika', sans-serif;
-        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        font-size: 2.5rem;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        padding-top: 1rem;
     }
 
-    .table th, .table td {
-        vertical-align: middle;
+    .cart-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
     }
 
-    .table th {
-        background-color: #f7f7f7;
+    .cart-item {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        padding: 1rem;
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .cart-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .cart-item-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+
+    .cart-item-details {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .cart-item-name {
+        font-family: 'Signika', sans-serif;
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .cart-item-price {
+        font-weight: bold;
+        color: #00BFFF;
+    }
+
+    .cart-item-actions {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 1rem;
+    }
+
+    .quantity-input {
+        width: 60px;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-family: 'Dosis', sans-serif;
+        text-align: center;
+    }
+
+    .action-button {
+        background: linear-gradient(45deg, #00FFFF, #FFFF00);
+        border: none;
+        color: #333;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-family: 'Signika', sans-serif;
         font-weight: 600;
     }
 
-    .table td {
-        border-color: #f1f1f1;
+    .action-button:hover {
+        background: linear-gradient(45deg, #FFFF00, #00FFFF);
+        transform: translateY(-2px);
+        box-shadow: 0 3px 10px rgba(4, 12, 50, 0.3);
     }
 
-    .table tfoot td {
+    .cart-total {
+        margin-top: 2rem;
+        text-align: center;
+        font-family: 'Signika', sans-serif;
         font-weight: 600;
-        background-color: #f7f7f7;
+        font-size: 1.5rem;
+        color: #333;
     }
 
     .empty-cart-message {
+        text-align: center;
         font-size: 1.5rem;
-        color: #888;
-        font-family: 'Dosis', sans-serif;
-        font-weight: 600;
+        color: #333;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        padding: 2rem;
+        backdrop-filter: blur(5px);
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="content-container mx-auto my-5">
-    <h1 class="text-center mb-4" style="font-family: 'Dosis', sans-serif; font-weight: 600;">Shopping Cart</h1>
-    {% if cart_items %}
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
+<div class="cart-content">
+    <div class="cart-container">
+        <h1 class="cart-title">Shopping Cart</h1>
+        
+        {% if cart_items %}
+            <div class="cart-items">
                 {% for item in cart_items %}
-                <tr>
-                    <td>{{ item.product.name }}</td>
-                    <td>{{ item.product.price|rupiah_format }}</td>
-                    <td>
-                        <span>1</span>
-                    </td>
-                    <td>{{ item.total_price|rupiah_format }}</td>
-                </tr>
+                <div class="cart-item">
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">{{ item.product.name }}</div>
+                        <div class="cart-item-price">{{ item.product.price|rupiah_format }}</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <form method="post" action="{% url 'main:edit_cart_item' item.id %}">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="quantity-input">
+                            <button type="submit" class="action-button">Update</button>
+                        </form>
+                        <form method="post" action="{% url 'main:remove_from_cart' item.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="action-button">Remove</button>
+                        </form>
+                    </div>
+                </div>
                 {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="3"><strong>Total</strong></td>
-                    <td><strong>{{ total|rupiah_format }}</strong></td>
-                </tr>
-            </tfoot>
-        </table>
-    {% else %}
-        <p class="text-center empty-cart-message">Your cart is empty.</p>
-    {% endif %}
+            </div>
+            <div class="cart-total">
+                Total: {{ total|rupiah_format }}
+            </div>
+        {% else %}
+            <div class="empty-cart-message">
+                <p>Your cart is empty.</p>
+            </div>
+        {% endif %}
+    </div>
 </div>
+
+<script>
+    document.querySelectorAll('.quantity-input').forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.value < 1) {
+                this.value = 1;
+            } else if (this.value > parseInt(this.getAttribute('max'))) {
+                this.value = this.getAttribute('max');
+            }
+        });
+    });
+</script>
 {% endblock %}

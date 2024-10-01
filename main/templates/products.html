@@ -7,7 +7,9 @@
 {% endblock meta %}
 
 {% block extra_head %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;600&family=Signika:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
     @keyframes glowing {
         0% { filter: hue-rotate(0deg); }
@@ -18,34 +20,35 @@
         background: linear-gradient(135deg, #00FFFF, #FFFFFF, #FFFF00);
         min-height: 100vh;
         font-family: 'Dosis', sans-serif;
+        padding-top: 70px; 
     }
 
     .product-container {
-        max-width: 1200px;
+        max-width: 800px;
         margin: 0 auto;
-        padding: 2rem;
+        padding: 1rem;
     }
 
     .product-title {
         font-family: 'Signika', sans-serif;
         font-weight: 600;
         color: #333;
-        font-size: 2.5rem;
+        font-size: 2rem;
         text-transform: uppercase;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         text-align: center;
+        padding-top: 1rem;
     }
 
     .categories-slider {
         position: relative;
         overflow: hidden;
         width: 100%;
-        max-width: 100%;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
         background: rgba(255, 255, 255, 0.5);
         border-radius: 10px;
-        padding: 1rem;
+        padding: 0.5rem;
         backdrop-filter: blur(5px);
         animation: glowing 3s linear infinite;
     }
@@ -63,8 +66,8 @@
 
     .category {
         flex: 0 0 auto;
-        width: 150px;
-        padding: 10px;
+        min-width: 100px;
+        padding: 8px;
         border: none;
         cursor: pointer;
         text-align: center;
@@ -76,6 +79,7 @@
         font-family: 'Signika', sans-serif;
         font-weight: 600;
         transition: all 0.3s ease;
+        font-size: 0.9rem;
     }
 
     .category:hover, .category.active {
@@ -91,25 +95,25 @@
         background-color: rgba(51, 51, 51, 0.7);
         color: #fff;
         border: none;
-        padding: 10px;
+        padding: 8px;
         cursor: pointer;
         z-index: 1;
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1rem;
         transition: background-color 0.3s ease;
     }
 
     .prev {
-        left: 10px;
+        left: 5px;
     }
 
     .next {
-        right: 10px;
+        right: 5px;
     }
 
     .slide-btn:hover {
@@ -119,7 +123,7 @@
     .products {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 1rem;
     }
 
     .product {
@@ -148,8 +152,9 @@
     }
 
     .product-image-container {
-        flex: 0 0 200px;
-        height: 200px;
+        width: 150px;
+        height: 150px;
+        position: relative;
         overflow: hidden;
         border-radius: 10px;
         margin-right: 1rem;
@@ -165,6 +170,7 @@
         flex: 1;
         display: flex;
         flex-direction: column;
+        justify-content: center;
     }
 
     .product-info > div {
@@ -174,7 +180,7 @@
     .product-name {
         font-family: 'Signika', sans-serif;
         font-weight: 600;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         color: #333;
     }
 
@@ -192,9 +198,9 @@
         background: linear-gradient(45deg, #00FFFF, #FFFF00);
         border: none;
         color: #333;
-        padding: 1rem 2rem;
+        padding: 0.8rem 1.5rem;
         border-radius: 50px;
-        font-size: 1.1rem;
+        font-size: 1rem;
         cursor: pointer;
         transition: all 0.3s ease;
         text-transform: uppercase;
@@ -249,6 +255,55 @@
     .notification-buttons button.no {
         background-color: #f44336;
         color: white;
+    }
+
+    @media (max-width: 768px) {
+        .product-content {
+            padding-top: 60px;
+        }
+
+        .product-title {
+            font-size: 1.5rem;
+            padding-top: 0.5rem;
+        }
+
+        .category {
+            min-width: 80px;
+            font-size: 0.8rem;
+        }
+
+        .products {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+
+        .add-product-section button {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .product-container {
+            padding: 0.5rem;
+        }
+
+        .product-content {
+            padding-top: 50px;
+        }
+
+        .products {
+            grid-template-columns: 1fr;
+        }
+
+        .category {
+            min-width: 70px;
+            font-size: 0.7rem;
+        }
+
+        .add-product-section button {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
     }
 </style>
 {% endblock %}
