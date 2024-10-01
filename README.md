@@ -1,10 +1,10 @@
-- Nama: Muhammad Afwan Hafizh
+![image](https://github.com/user-attachments/assets/8059a8de-63a6-4372-ab7a-8956fd641297)- Nama: Muhammad Afwan Hafizh
 - NPM: 2306208855
 - Kelas: PBP-F
 
 - Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
 
-# Tugas 5: Implementasi Autentikasi, Session, dan Cookies pada Django
+# Tugas 5: Desain Web menggunakan HTML, CSS dan Framework CSS
 
 ## Implementasikan fungsi untuk menghapus dan mengedit product.
 
@@ -12,6 +12,7 @@
 
    2. Buat object baru bernama ```Cart``` dan ```CartItem```.
       ```
+      ...
       class Cart(models.Model):
           id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
           user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -33,13 +34,15 @@
           @property
           def total_price(self):
               return self.quantity * self.product.price
+      ...
       ```
-      Potongan code di atas mendefinisikan dua model dalam framework Django untuk sistem cart belanja. Model ```Cart``` memiliki atribut seperti ID unik, relasi one-to-one dengan user, serta waktu pembuatan dan pembaruan. Model ini merepresentasikan cart belanja yang dimiliki setiap user. Di sisi lain, model CartItem menghubungkan produk tertentu dengan cart belanja melalui relasi many-to-one, dan menyimpan jumlah produk yang dimasukkan. Model ini juga memiliki properti ```total_price``` yang menghitung total harga berdasarkan jumlah dan harga produk. Metode ```__str__``` pada kedua model memberikan representasi string untuk objek tersebut.
+      Potongan code di atas mendefinisikan dua model dalam framework Django untuk sistem cart belanja. Model ```Cart``` memiliki atribut seperti ID unik, relasi one-to-one dengan user, serta waktu pembuatan dan pembaruan. Model ini merepresentasikan cart belanja yang dimiliki setiap user. Di sisi lain, model ```CartItem``` menghubungkan produk tertentu dengan cart belanja melalui relasi many-to-one, dan menyimpan jumlah produk yang dimasukkan. Model ini juga memiliki properti ```total_price``` yang menghitung total harga berdasarkan jumlah dan harga produk. Metode ```__str__``` pada kedua model memberikan representasi string untuk objek tersebut.
    
    3. Setelah membuat modelnya, pergi ke ```views.py``` pada direktori ```main```.
       
-   4. Implementasikan fungsi untuk edit product. Disini saya mengimplementasikan edit sebagai "update" kuantitas dari jumlah product yang ada pada cart user.
+   4. Implementasikan fungsi untuk edit product. Di sini saya mengimplementasikan edit sebagai "update" kuantitas dari jumlah product yang ada pada cart user.
       ```
+      ...
       @login_required(login_url='/login')
       def edit_product(request, cart_item_id):
           cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
@@ -51,6 +54,7 @@
               else:
                   messages.error(request, 'Invalid quantity.')
           return HttpResponseRedirect(reverse('main:cart'))
+      ...
       ```
       Fungsi ini memungkinkan user untuk mengedit kuantitas item dalam cart belanja mereka dengan memvalidasi input dan memberikan umpan balik melalui pesan jika kuantitas tidak valid. Jika berhasil, user akan diarahkan kembali ke cart page mereka.
 
@@ -64,9 +68,199 @@
       ```
       Fungsi ini memungkinkan user untuk menghapus item tertentu dari cart belanja mereka. Setelah penghapusan, user diarahkan kembali ke cart page. Proses ini mencakup pemeriksaan apakah user sudah login dan validasi keberadaan item yang ingin dihapus.
 
-   6. 
+   6. Setelah mengimplementasikan kedua fungsi remove dan edit, maka atur path-nya di ```urls.py``` pada direktori ```main```.
+      ```
+      ...
+      path('remove-from-cart/<uuid:cart_item_id>/', views.remove_from_cart, name='remove_from_cart'),
+      path('edit-cart-item/<uuid:cart_item_id>/', views.edit_product, name='edit_cart_item'),
+      ...
+      ```
 
-         
+   7. Sekarang modifikasi HTML pada page yang diinginkan untuk mengimplementasikan fungsi remove dan edit pada app. Di sini saya mengimplementasikan kedua fungsi tersebut pada ```cart.html``` untuk meng-update dan menghapus item yang sudah ditambahkan pada cart.
+      ```
+      ...
+      <form method="post" action="{% url 'main:edit_cart_item' item.id %}">
+          {% csrf_token %}
+          <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="quantity-input">
+          <button type="submit" class="action-button">Update</button>
+      </form>
+      <form method="post" action="{% url 'main:remove_from_cart' item.id %}">
+          {% csrf_token %}
+          <button type="submit" class="action-button">Remove</button>
+      </form>
+      ...
+      ```
+      Pada potongan code ini, terdapat dua form: yang pertama digunakan untuk memperbarui jumlah (quantity) item tertentu dalam cart dengan input berupa angka, yang artinya user dapat mengubah jumlahnya antara 1 hingga stok yang tersedia dari produk. Form ini akan mengirimkan permintaan POST ke URL yang ditentukan untuk memperbarui item ketika tombol "Update" ditekan. Form kedua memungkinkan user untuk menghapus item dari keranjang; ketika tombol "Remove" ditekan, permintaan POST akan dikirim ke URL yang sesuai untuk menghapus item tersebut. Keduanya juga menyertakan token CSRF untuk melindungi dari serangan Cross-Site Request Forgery.
+
+## Kustomisasi desain pada template HTML yang telah dibuat pada tugas-tugas sebelumnya menggunakan CSS atau CSS framework (seperti Bootstrap, Tailwind, Bulma)
+
+   1. **Kustomisasi halaman login, register, dan tambah product semenarik mungkin.** Mungkin apabila saya tampakkan keseluruhan codenya di sini, maka nantinya akan jadi panjang sekali sehingga saya akan menjelaskan potongan codenya saja secara umum. Di sini saya menerapkan CSS dengan ```internal style sheet```: menggunakan elemen <style> di bagian <head>.
+      Contoh, potongan code css pada ```login.html```:
+      ```
+      ...
+      .login-content {
+          background: linear-gradient(135deg, #00FFFF, #FFFFFF, #FFFF00, #fb1bff);
+          background-size: 200% 200%;
+          animation: glowing 10s linear infinite;
+          min-height: 100vh;
+          font-family: 'Dosis', sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 1rem;
+      }
+      ...
+      ```
+      Potongan CSS untuk class ```.login-content``` mengatur tampilan latar belakang konten login dengan menggunakan gradasi warna yang menarik dari cyan ke putih, kuning, dan magenta, diterapkan dengan sudut 135 derajat. Gradasi ini diperluas dengan ```background-size: 200% 200%```, memungkinkan efek animasi yang membuat warna berputar dengan lancar selama 10 detik. Dengan ```min-height: 100vh```, elemen ini selalu mengisi setidaknya satu layar penuh, sementara penggunaan ```flexbox``` memusatkan konten secara vertikal dan horizontal.
+      Berikut contoh tampilan untuk page ```login.html```.
+      ![image](https://github.com/user-attachments/assets/5429d108-d1c0-4255-88a6-93b2aa6e02b8)
+
+   2. **Kustomisasi halaman daftar product menjadi lebih menarik dan responsive.** Di sini saya menerapkan implementasi ini pada bagian ```cart.html```. Jadi ketika user belum memasukkan suatu item ke dalam keranjang, maka pada page tersebut akan bertuliskan ```Your cart is empty.```. Berikut potongan code pada ```cart.html``` yang menjadikannya responsive.
+      ```
+      ...
+      .cart-items {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          justify-content: center;
+      }
+      ...
+      ```
+      Potongan code ini mendefinisikan kelas ```.cart-items```, yang menggunakan properti ```display: flex``` dan ```flex-wrap: wrap``` untuk memungkinkan elemen di dalamnya membentuk baris fleksibel dan membungkus ke baris baru ketika ruang horizontal terbatas. Ini membuat tampilan item dalam cart tetap terorganisir dan responsive, sehingga user tidak perlu menggulir secara horizontal pada layar yang lebih kecil. Dengan tambahan ```gap: 1rem```, ada jarak yang konsisten antara setiap item. Berikut contoh tampilan untuk page ```cart.html```.
+      
+      Ketika belum ada item yang ditambahkan pada cart.
+      ```
+      ...
+      {% else %}
+            <div class="empty-cart-message">
+                <p>Your cart is empty.</p>
+            </div>
+      {% endif %}
+      ...
+      ```
+      Jika kondisi di dalam ```{% if cart_items %}``` tidak terpenuhi (artinya tidak ada item dalam keranjang), maka bagian di dalam ```{% else %}``` akan dieksekusi. Di sini, terdapat sebuah div dengan class ```empty-cart-message```, yang berisi elemen paragraf ```<p>``` yang menampilkan pesan "Your cart is empty." 
+      ![image](https://github.com/user-attachments/assets/e59db246-63f3-4b4a-b5f7-ee7ffbb22c21)
+
+      Ketika terdapat item yang telah ditambahkan pada cart.
+      ```
+      ...
+       {% if cart_items %}
+            <div class="cart-items">
+                {% for item in cart_items %}
+                <div class="cart-item">
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">{{ item.product.name }}</div>
+                        <div class="cart-item-price">{{ item.product.price|rupiah_format }}</div>
+                    </div>
+      ...
+      ```
+      Kondisi ```{% if cart_items %}``` memeriksa apakah ada item dalam cart. Jika ada, maka div dengan kelas ```cart-items``` akan ditampilkan. Di dalamnya, terdapat loop ```{% for item in cart_items %}``` yang iterasi melalui setiap item dalam cart. Setiap item akan ditampilkan dalam sebuah div dengan kelas ```cart-item```, yang mencakup gambar produk (```<img>```), nama produk (```<div class="cart-item-name">```), dan harga produk yang diformat menggunakan filter ```rupiah_format```. 
+      ![image](https://github.com/user-attachments/assets/44ec2148-a9f1-4476-9a7a-0ab3416a717d)
+
+## Untuk setiap card product, buatlah dua buah button untuk mengedit dan menghapus product pada card tersebut! 
+
+   1. Berikut codenya yang sebelumnya saya telah jelaskan pada step ke-tujuh bagian awal.
+      ```
+      ...
+      <form method="post" action="{% url 'main:edit_cart_item' item.id %}">
+          {% csrf_token %}
+          <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="quantity-input">
+          <button type="submit" class="action-button">Update</button>
+      </form>
+      <form method="post" action="{% url 'main:remove_from_cart' item.id %}">
+          {% csrf_token %}
+          <button type="submit" class="action-button">Remove</button>
+      </form>
+      ...
+      ```
+      Pada potongan code ini, terdapat dua form: yang pertama digunakan untuk memperbarui jumlah (quantity) item tertentu dalam cart dengan input berupa angka, yang artinya user dapat mengubah jumlahnya antara 1 hingga stok yang tersedia dari produk. Form ini akan mengirimkan permintaan POST ke URL yang ditentukan untuk memperbarui item ketika tombol "Update" ditekan. Form kedua memungkinkan user untuk menghapus item dari keranjang; ketika tombol "Remove" ditekan, permintaan POST akan dikirim ke URL yang sesuai untuk menghapus item tersebut. Keduanya juga menyertakan token CSRF untuk melindungi dari serangan Cross-Site Request Forgery.
+
+## Buatlah navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop.
+
+   1. Buat terlebih dahulu struktur HTML untuk ```navbar.html``` sesuai kebutuhan pada app.
+      ```
+      ...
+      <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/"><img src="{% static 'img/logo.png' %}" alt="Logo"></a>
+               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                   <span class="navbar-toggler-icon"></span>
+               </button>
+               <div class="collapse navbar-collapse" id="navbarNav">
+                   <ul class="navbar-nav me-auto">
+                       <li class="nav-item">
+                           <a class="nav-link" href="/">Home</a>
+                       </li>
+                       <li class="nav-item">
+                           <a class="nav-link" href="{% url 'main:products' %}">Categories & Products</a>
+                       </li>
+                   </ul>
+                   <ul class="navbar-nav">
+                       <li class="nav-item">
+                           <a class="nav-link" href="{% url 'main:cart' %}">
+                               <i class="bi bi-cart"></i> Cart
+                           </a>
+                       </li>
+                       {% if user.is_authenticated %}
+                       <li class="nav-item dropdown">
+                           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                               {{ user.username }}
+                           </a>
+                           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                               <li><a class="dropdown-item" href="{% url 'main:account' %}">Account</a></li>
+                               <li><hr class="dropdown-divider"></li>
+                               <li><a class="dropdown-item" href="{% url 'main:logout' %}">Logout</a></li>
+                           </ul>
+                       </li>
+                       {% else %}
+                       <li class="nav-item">
+                           <a class="nav-link" href="{% url 'main:login' %}">Sign in</a>
+                       </li>
+                       {% endif %}
+                   </ul>
+               </div>
+           </div>
+      </nav>
+      ...
+      ```
+      Potongan code ini adalah implementasi navbar menggunakan framework ```Bootstrap``` dalam template Django. Saya membuat navbar ini agar bersifat responsive dan tetap berada di bagian atas halaman (```fixed-top```). Bagian pertama dari navbar berisi tautan ke ```Home``` dan ```Categories & Products```. Bagian kedua mencakup ikon cart yang mengarah ke halaman cart belanja. Jika user sudah terautentikasi, akan ditampilkan dropdown dengan nama user untuk mengakses akun dan logout. Jika tidak, tautan untuk masuk (```Sign in```) akan ditampilkan. Elemen-elemen seperti ```data-bs-toggle``` dan ```data-bs-target``` memungkinkan navbar untuk berfungsi dengan baik dalam mode responsive, sehingga tombol toggler akan muncul pada layar kecil untuk menampilkan menu navigasi.
+
+   2. Kustomisasi tampilan navbar dengan CSS. Berikut contoh potongan codenya.
+      ```
+      ...
+      .nav-link {
+          position: relative;
+          padding: 0.5rem 1rem;
+      }
+      
+      .nav-link::after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: 0;
+          left: 50%;
+          background-color: #000;
+          transition: all 0.3s ease;
+      }
+      
+      .nav-link:hover::after {
+          width: 100%;
+          left: 0;
+      }
+      ...
+      ```
+      Potongan code ini mendefinisikan style untuk tautan navigasi (```.nav-link```). Pertama, ```position: relative;``` pada ```.nav-link``` memungkinkan posisi absolut dari ```pseudo-elemen ::after```, yang digunakan untuk membuat garis bawah. Garis ini diatur dengan ```width: 0;```, sehingga tidak terlihat pada keadaan normal. Saat pengguna mengarahkan kursor ke tautan (```hover```), garis bawah akan meluas ke lebar penuh (```width: 100%;```) dan berpindah ke kiri (```left: 0;```), memberikan efek visual. Transisi yang smooth diatur oleh ```transition: all 0.3s ease;```, menciptakan page yang responsive dan meningkatkan tampilan navbar secara keseluruhan.
+
+   3. Berikut tampilan navbar versi desktop dan mobilenya.
+      
+      Versi desktop:
+      ![image](https://github.com/user-attachments/assets/36eba6b5-af0f-4bc4-b2a5-bbf3319a2cad)
+
+      Versi mobile:
+      
+      
 # Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
 
    1. Aktifkan virtual environment, lalu pergi ke ```views.py``` pada direktori ```main```.
@@ -212,7 +406,7 @@
       ```
       ```User``` dari ```django.contrib.auth.models``` adalah model default Django yang mewakili user di aplikasi Django.
       
-   2. Disini saya membuat suatu model baru bernama ```Cart``` yang berfungsi untuk menyimpan product yang dimasukkan ke dalam cart pada masing-masing user. Berikut potongan codenya:
+   2. Di sini saya membuat suatu model baru bernama ```Cart``` yang berfungsi untuk menyimpan product yang dimasukkan ke dalam cart pada masing-masing user. Berikut potongan codenya:
       ```
       ...
       class Cart(models.Model):
@@ -287,7 +481,7 @@
       ```
       Apabila input valid dan user berhasil login, maka cookie bernama ```last_login``` diatur untuk menyimpan waktu login terakhir dengan nilai berupa string dari waktu saat ini (```datetime.datetime.now()```).
 
-   3. Selanjutnya, pada fungsi ```account_page```, tambahkan potongan kode ```'last_login': request.COOKIES['last_login']``` ke dalam variabel context.
+   3. Selanjutnya, pada fungsi ```account_page```, tambahkan potongan code ```'last_login': request.COOKIES['last_login']``` ke dalam variabel context.
       ```
       ...
       context = {
@@ -318,7 +512,7 @@
    6. Jalankan ```python manage.py runserver```.
    
 ## Apa perbedaan antara HttpResponseRedirect() dan redirect()
-   ```HttpResponseRedirect()``` dan ```redirect()``` pada dasarnya adalah dua cara untuk melakukan redirection dalam Django. ```HttpResponseRedirect()``` adalah class yang merupakan bagian dari modul ```django.http``` dan menghasilkan respons HTTP dengan kode status 302 secara default, sementara ```redirect()``` adalah fungsi yang merupakan bagian dari modul ```django.shortcuts``` dan sebenarnya menggunakan ```HttpResponseRedirect()``` di balik layar. Perbedaan keduanya terletak pada fleksibilitasnya. ```HttpResponseRedirect()``` membutuhkan URL lengkap atau path absolut, sedangkan ```redirect()``` dapat menerima berbagai jenis argumen seperti nama view, URL lengkap, atau bahkan model objects, yang artinya membuatnya lebih fleksibel dan mudah digunakan dalam berbagai skema. Selain itu, ```redirect()``` secara otomatis menangani pembentukan URL yang tepat menggunakan fungsi ```reverse()``` ketika diberikan nama view, sehingga lebih aman terhadap perubahan konfigurasi URL.
+   ```HttpResponseRedirect()``` dan ```redirect()``` pada dasarnya adalah dua cara untuk melakukan redirection dalam Django. ```HttpResponseRedirect()``` adalah class yang merupakan bagian dari modul ```django.http``` dan menghasilkan respons HTTP dengan code status 302 secara default, sementara ```redirect()``` adalah fungsi yang merupakan bagian dari modul ```django.shortcuts``` dan sebenarnya menggunakan ```HttpResponseRedirect()``` di balik layar. Perbedaan keduanya terletak pada fleksibilitasnya. ```HttpResponseRedirect()``` membutuhkan URL lengkap atau path absolut, sedangkan ```redirect()``` dapat menerima berbagai jenis argumen seperti nama view, URL lengkap, atau bahkan model objects, yang artinya membuatnya lebih fleksibel dan mudah digunakan dalam berbagai skema. Selain itu, ```redirect()``` secara otomatis menangani pembentukan URL yang tepat menggunakan fungsi ```reverse()``` ketika diberikan nama view, sehingga lebih aman terhadap perubahan konfigurasi URL.
 
 ## Jelaskan cara kerja penghubungan model Product dengan User!
 
@@ -469,7 +663,7 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       ...
       ]
       ```
-      Disini saya melakukan konfigurasi routing fungsi ```create_product_entry``` sebagai view pada page ```account```.
+      Di sini saya melakukan konfigurasi routing fungsi ```create_product_entry``` sebagai view pada page ```account```.
    
    6. Setelah path URL diatur pada urls.py, maka implementasikan form yang telah dibuat pada page HTML. Berikut contoh implementasi mengenai potongan codenya.
       ```
@@ -507,7 +701,7 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       ```
       - ```HttpResponse``` adalah salah satu kelas bawaan dari Django yang digunakan untuk mengirimkan respon HTTP ke client.
       - ```serializers``` adalah modul dari Django yang digunakan untuk mengubah data query menjadi format serializable yang dapat diproses lebih lanjut, seperti JSON, XML, dan lain-lain.
-   3. Disini saya buat suatu fungsi bernama ```serialize_data``` yang menerima parameter ```request```, ```model```, ```fmt```(format JSON atau XML), dan ```id```. Ini dilakukan untuk menghindari inisialisasi variabel yang berulang.
+   3. Di sini saya buat suatu fungsi bernama ```serialize_data``` yang menerima parameter ```request```, ```model```, ```fmt```(format JSON atau XML), dan ```id```. Ini dilakukan untuk menghindari inisialisasi variabel yang berulang.
       ```
       def serialize_data(request, model, fmt, id=None):
           if id:
