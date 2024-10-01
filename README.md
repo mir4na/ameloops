@@ -113,7 +113,7 @@
       ```
       Potongan CSS untuk class ```.login-content``` mengatur tampilan latar belakang konten login dengan menggunakan gradasi warna yang menarik dari cyan ke putih, kuning, dan magenta, diterapkan dengan sudut 135 derajat. Gradasi ini diperluas dengan ```background-size: 200% 200%```, memungkinkan efek animasi yang membuat warna berputar dengan lancar selama 10 detik. Dengan ```min-height: 100vh```, elemen ini selalu mengisi setidaknya satu layar penuh, sementara penggunaan ```flexbox``` memusatkan konten secara vertikal dan horizontal.
       Berikut contoh tampilan untuk page ```login.html```.
-      ![image](https://github.com/user-attachments/assets/5429d108-d1c0-4255-88a6-93b2aa6e02b8)
+      - ![image](https://github.com/user-attachments/assets/5429d108-d1c0-4255-88a6-93b2aa6e02b8)
 
    2. **Kustomisasi halaman daftar product menjadi lebih menarik dan responsive.** Di sini saya menerapkan implementasi ini pada bagian ```cart.html```. Jadi ketika user belum memasukkan suatu item ke dalam keranjang, maka pada page tersebut akan bertuliskan ```Your cart is empty.```. Berikut potongan code pada ```cart.html``` yang menjadikannya responsive.
       ```
@@ -139,7 +139,7 @@
       ...
       ```
       Jika kondisi di dalam ```{% if cart_items %}``` tidak terpenuhi (artinya tidak ada item dalam keranjang), maka bagian di dalam ```{% else %}``` akan dieksekusi. Di sini, terdapat sebuah div dengan class ```empty-cart-message```, yang berisi elemen paragraf ```<p>``` yang menampilkan pesan "Your cart is empty." 
-      ![image](https://github.com/user-attachments/assets/e59db246-63f3-4b4a-b5f7-ee7ffbb22c21)
+      - ![image](https://github.com/user-attachments/assets/e59db246-63f3-4b4a-b5f7-ee7ffbb22c21)
 
       Ketika terdapat item yang telah ditambahkan pada cart.
       ```
@@ -256,10 +256,10 @@
    3. Berikut tampilan navbar versi desktop dan mobilenya.
       
       Versi desktop:
-      ![image](https://github.com/user-attachments/assets/36eba6b5-af0f-4bc4-b2a5-bbf3319a2cad)
+      - ![image](https://github.com/user-attachments/assets/36eba6b5-af0f-4bc4-b2a5-bbf3319a2cad)
 
       Versi mobile:
-      ![image](https://github.com/user-attachments/assets/67eb33dc-928e-480a-bcc5-4ba56850da62)
+      - ![image](https://github.com/user-attachments/assets/67eb33dc-928e-480a-bcc5-4ba56850da62)
 
 ## Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
 
