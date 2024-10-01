@@ -4,6 +4,47 @@
 
 - Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
 
+# Tugas 5: Implementasi Autentikasi, Session, dan Cookies pada Django
+
+## Implementasikan fungsi untuk menghapus dan mengedit product.
+
+   1. Pergi ke ```models.py``` pada direktori ```main```.
+
+   2. Buat object baru bernama ```Cart``` dan ```CartItem```.
+      ```
+      
+      ```
+   
+   1. Pergi ke ```views.py``` pada direktori ```main```.
+      
+   2. Implementasikan fungsi untuk edit product. Disini saya mengimplementasikan edit sebagai "update" kuantitas dari jumlah product yang ada pada cart user.
+      ```
+      @login_required(login_url='/login')
+      def edit_product(request, cart_item_id):
+          cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
+          if request.method == 'POST':
+              new_quantity = int(request.POST.get('quantity', 1))
+              if new_quantity > 0 and new_quantity <= cart_item.product.stock:
+                  cart_item.quantity = new_quantity
+                  cart_item.save()
+              else:
+                  messages.error(request, 'Invalid quantity.')
+          return HttpResponseRedirect(reverse('main:cart'))
+      ```
+      Fungsi ini memungkinkan user untuk mengedit kuantitas item dalam cart belanja mereka dengan memvalidasi input dan memberikan umpan balik melalui pesan jika kuantitas tidak valid. Jika berhasil, user akan diarahkan kembali ke cart page mereka.
+
+      3. Lalu, implementasikan fungsi untuk remove product.
+         ```
+         @login_required(login_url='/login')
+         def remove_from_cart(request, cart_item_id):
+             cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
+             cart_item.delete()
+             return HttpResponseRedirect(reverse('main:cart'))
+         ```
+         Fungsi ini memungkinkan user untuk menghapus item tertentu dari cart belanja mereka. Setelah penghapusan, user diarahkan kembali ke cart page. Proses ini mencakup pemeriksaan apakah user sudah login dan validasi keberadaan item yang ingin dihapus.
+
+      4. 
+         
 # Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
 
    1. Aktifkan virtual environment, lalu pergi ke ```views.py``` pada direktori ```main```.
