@@ -6,7 +6,7 @@
 
 {% block extra_head %}
 <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;600&family=Signika:wght@400;600&display=swap" rel="stylesheet">
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
     @keyframes glowing {
         0% { filter: hue-rotate(0deg); }
@@ -22,6 +22,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: 1rem;
     }
 
     .register-container {
@@ -120,6 +121,33 @@
 
     .login-link a:hover {
         color: #0080FF;
+    }
+
+    /* Responsiveness */
+    @media (max-width: 768px) {
+        .register-container {
+            padding: 1rem;
+        }
+
+        .register-title {
+            font-size: 1.8rem;
+        }
+
+        .register-btn {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .register-title {
+            font-size: 1.5rem;
+        }
+
+        .register-btn {
+            padding: 0.7rem 1.2rem;
+            font-size: 0.9rem;
+        }
     }
 </style>
 {% endblock %}

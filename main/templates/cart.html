@@ -10,9 +10,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;600&family=Signika:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
+    body {
+        padding-top: 60px; /* Add padding to account for the fixed navbar */
+    }
+    
     .cart-content {
         background: linear-gradient(135deg, #00FFFF, #FFFFFF, #FFFF00);
-        min-height: 100vh;
+        min-height: calc(100vh - 60px); /* Subtract the navbar height */
         font-family: 'Dosis', sans-serif;
     }
 
@@ -30,9 +34,9 @@
         text-transform: uppercase;
         margin-bottom: 1.5rem;
         text-align: center;
+        padding-top: 1rem;
     }
 
-    /* Styling untuk membuat tampilan setiap item menjadi card */
     .cart-items {
         display: flex;
         flex-wrap: wrap;
@@ -122,7 +126,7 @@
 
     .cart-total {
         margin-top: 2rem;
-        text-align: right;
+        text-align: center;
         font-family: 'Signika', sans-serif;
         font-weight: 600;
         font-size: 1.5rem;
