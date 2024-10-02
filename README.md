@@ -4,6 +4,299 @@
 
 - Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
 
+# Tugas 5: Desain Web menggunakan HTML, CSS dan Framework CSS
+
+## Implementasikan fungsi untuk menghapus dan mengedit product.
+
+   1. Pergi ke ```models.py``` pada direktori ```main```.
+
+   2. Buat object baru bernama ```Cart``` dan ```CartItem```.
+      ```
+      ...
+      class Cart(models.Model):
+          id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+          user = models.OneToOneField(User, on_delete=models.CASCADE)
+          created_at = models.DateTimeField(auto_now_add=True)
+          updated_at = models.DateTimeField(auto_now=True)
+      
+          def __str__(self):
+              return f"Cart for {self.user.username}"
+
+      class CartItem(models.Model):
+          id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+          cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+          product = models.ForeignKey(Product, on_delete=models.CASCADE)
+          quantity = models.PositiveIntegerField(default=1)
+      
+          def __str__(self):
+              return f"{self.quantity} of {self.product.name}"
+      
+          @property
+          def total_price(self):
+              return self.quantity * self.product.price
+      ...
+      ```
+      Potongan code di atas mendefinisikan dua model dalam framework Django untuk sistem cart belanja. Model ```Cart``` memiliki atribut seperti ID unik, relasi one-to-one dengan user, serta waktu pembuatan dan pembaruan. Model ini merepresentasikan cart belanja yang dimiliki setiap user. Di sisi lain, model ```CartItem``` menghubungkan produk tertentu dengan cart belanja melalui relasi many-to-one, dan menyimpan jumlah produk yang dimasukkan. Model ini juga memiliki properti ```total_price``` yang menghitung total harga berdasarkan jumlah dan harga produk. Metode ```__str__``` pada kedua model memberikan representasi string untuk objek tersebut.
+   
+   3. Setelah membuat modelnya, pergi ke ```views.py``` pada direktori ```main```.
+      
+   4. Implementasikan fungsi untuk edit product. Di sini saya mengimplementasikan edit sebagai "update" kuantitas dari jumlah product yang ada pada cart user.
+      ```
+      ...
+      @login_required(login_url='/login')
+      def edit_product(request, cart_item_id):
+          cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
+          if request.method == 'POST':
+              new_quantity = int(request.POST.get('quantity', 1))
+              if new_quantity > 0 and new_quantity <= cart_item.product.stock:
+                  cart_item.quantity = new_quantity
+                  cart_item.save()
+              else:
+                  messages.error(request, 'Invalid quantity.')
+          return HttpResponseRedirect(reverse('main:cart'))
+      ...
+      ```
+      Fungsi ini memungkinkan user untuk mengedit kuantitas item dalam cart belanja mereka dengan memvalidasi input dan memberikan umpan balik melalui pesan jika kuantitas tidak valid. Jika berhasil, user akan diarahkan kembali ke cart page mereka.
+
+   5. Lalu, implementasikan fungsi untuk remove product.
+      ```
+      @login_required(login_url='/login')
+      def remove_from_cart(request, cart_item_id):
+          cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
+          cart_item.delete()
+          return HttpResponseRedirect(reverse('main:cart'))
+      ```
+      Fungsi ini memungkinkan user untuk menghapus item tertentu dari cart belanja mereka. Setelah penghapusan, user diarahkan kembali ke cart page. Proses ini mencakup pemeriksaan apakah user sudah login dan validasi keberadaan item yang ingin dihapus.
+
+   6. Setelah mengimplementasikan kedua fungsi remove dan edit, maka atur path-nya di ```urls.py``` pada direktori ```main```.
+      ```
+      ...
+      path('remove-from-cart/<uuid:cart_item_id>/', views.remove_from_cart, name='remove_from_cart'),
+      path('edit-cart-item/<uuid:cart_item_id>/', views.edit_product, name='edit_cart_item'),
+      ...
+      ```
+
+   7. Sekarang modifikasi HTML pada page yang diinginkan untuk mengimplementasikan fungsi remove dan edit pada app. Di sini saya mengimplementasikan kedua fungsi tersebut pada ```cart.html``` untuk meng-update dan menghapus item yang sudah ditambahkan pada cart.
+      ```
+      ...
+      <form method="post" action="{% url 'main:edit_cart_item' item.id %}">
+          {% csrf_token %}
+          <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="quantity-input">
+          <button type="submit" class="action-button">Update</button>
+      </form>
+      <form method="post" action="{% url 'main:remove_from_cart' item.id %}">
+          {% csrf_token %}
+          <button type="submit" class="action-button">Remove</button>
+      </form>
+      ...
+      ```
+      Pada potongan code ini, terdapat dua form: yang pertama digunakan untuk memperbarui jumlah (quantity) item tertentu dalam cart dengan input berupa angka, yang artinya user dapat mengubah jumlahnya antara 1 hingga stok yang tersedia dari produk. Form ini akan mengirimkan permintaan POST ke URL yang ditentukan untuk memperbarui item ketika tombol "Update" ditekan. Form kedua memungkinkan user untuk menghapus item dari keranjang; ketika tombol "Remove" ditekan, permintaan POST akan dikirim ke URL yang sesuai untuk menghapus item tersebut. Keduanya juga menyertakan token CSRF untuk melindungi dari serangan Cross-Site Request Forgery.
+
+## Kustomisasi desain pada template HTML yang telah dibuat pada tugas-tugas sebelumnya menggunakan CSS atau CSS framework (seperti Bootstrap, Tailwind, Bulma)
+
+   1. **Kustomisasi halaman login, register, dan tambah product semenarik mungkin.** Mungkin apabila saya tampakkan keseluruhan codenya di sini, maka nantinya akan jadi panjang sekali sehingga saya akan menjelaskan potongan codenya saja secara umum. Di sini saya menerapkan CSS dengan ```internal style sheet```: menggunakan elemen <style> di bagian <head>.
+      Contoh, potongan code css pada ```login.html```:
+      ```
+      ...
+      .login-content {
+          background: linear-gradient(135deg, #00FFFF, #FFFFFF, #FFFF00, #fb1bff);
+          background-size: 200% 200%;
+          animation: glowing 10s linear infinite;
+          min-height: 100vh;
+          font-family: 'Dosis', sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 1rem;
+      }
+      ...
+      ```
+      Potongan CSS untuk class ```.login-content``` mengatur tampilan latar belakang konten login dengan menggunakan gradasi warna yang menarik dari cyan ke putih, kuning, dan magenta, diterapkan dengan sudut 135 derajat. Gradasi ini diperluas dengan ```background-size: 200% 200%```, memungkinkan efek animasi yang membuat warna berputar dengan lancar selama 10 detik. Dengan ```min-height: 100vh```, elemen ini selalu mengisi setidaknya satu layar penuh, sementara penggunaan ```flexbox``` memusatkan konten secara vertikal dan horizontal.
+      Berikut contoh tampilan untuk page ```login.html```.
+      - ![image](https://github.com/user-attachments/assets/5429d108-d1c0-4255-88a6-93b2aa6e02b8)
+
+   2. **Kustomisasi halaman daftar product menjadi lebih menarik dan responsive.** Di sini saya menerapkan implementasi ini pada bagian ```cart.html```. Jadi ketika user belum memasukkan suatu item ke dalam keranjang, maka pada page tersebut akan bertuliskan ```Your cart is empty.```. Berikut potongan code pada ```cart.html``` yang menjadikannya responsive.
+      ```
+      ...
+      .cart-items {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          justify-content: center;
+      }
+      ...
+      ```
+      Potongan code ini mendefinisikan kelas ```.cart-items```, yang menggunakan properti ```display: flex``` dan ```flex-wrap: wrap``` untuk memungkinkan elemen di dalamnya membentuk baris fleksibel dan membungkus ke baris baru ketika ruang horizontal terbatas. Ini membuat tampilan item dalam cart tetap terorganisir dan responsive, sehingga user tidak perlu menggulir secara horizontal pada layar yang lebih kecil. Dengan tambahan ```gap: 1rem```, ada jarak yang konsisten antara setiap item. Berikut contoh tampilan untuk page ```cart.html```.
+      
+      Ketika belum ada item yang ditambahkan pada cart.
+      ```
+      ...
+      {% else %}
+            <div class="empty-cart-message">
+                <p>Your cart is empty.</p>
+            </div>
+      {% endif %}
+      ...
+      ```
+      Jika kondisi di dalam ```{% if cart_items %}``` tidak terpenuhi (artinya tidak ada item dalam keranjang), maka bagian di dalam ```{% else %}``` akan dieksekusi. Di sini, terdapat sebuah div dengan class ```empty-cart-message```, yang berisi elemen paragraf ```<p>``` yang menampilkan pesan "Your cart is empty." 
+      - ![image](https://github.com/user-attachments/assets/e59db246-63f3-4b4a-b5f7-ee7ffbb22c21)
+
+      Ketika terdapat item yang telah ditambahkan pada cart.
+      ```
+      ...
+       {% if cart_items %}
+            <div class="cart-items">
+                {% for item in cart_items %}
+                <div class="cart-item">
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">{{ item.product.name }}</div>
+                        <div class="cart-item-price">{{ item.product.price|rupiah_format }}</div>
+                    </div>
+      ...
+      ```
+      Kondisi ```{% if cart_items %}``` memeriksa apakah ada item dalam cart. Jika ada, maka div dengan kelas ```cart-items``` akan ditampilkan. Di dalamnya, terdapat loop ```{% for item in cart_items %}``` yang iterasi melalui setiap item dalam cart. Setiap item akan ditampilkan dalam sebuah div dengan kelas ```cart-item```, yang mencakup gambar produk (```<img>```), nama produk (```<div class="cart-item-name">```), dan harga produk yang diformat menggunakan filter ```rupiah_format```. 
+      ![image](https://github.com/user-attachments/assets/44ec2148-a9f1-4476-9a7a-0ab3416a717d)
+
+## Untuk setiap card product, buatlah dua buah button untuk mengedit dan menghapus product pada card tersebut! 
+
+   1. Berikut codenya yang sebelumnya saya telah jelaskan pada step ke-tujuh bagian awal.
+      ```
+      ...
+      <form method="post" action="{% url 'main:edit_cart_item' item.id %}">
+          {% csrf_token %}
+          <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="quantity-input">
+          <button type="submit" class="action-button">Update</button>
+      </form>
+      <form method="post" action="{% url 'main:remove_from_cart' item.id %}">
+          {% csrf_token %}
+          <button type="submit" class="action-button">Remove</button>
+      </form>
+      ...
+      ```
+      Pada potongan code ini, terdapat dua form: yang pertama digunakan untuk memperbarui jumlah (quantity) item tertentu dalam cart dengan input berupa angka, yang artinya user dapat mengubah jumlahnya antara 1 hingga stok yang tersedia dari produk. Form ini akan mengirimkan permintaan POST ke URL yang ditentukan untuk memperbarui item ketika tombol "Update" ditekan. Form kedua memungkinkan user untuk menghapus item dari keranjang; ketika tombol "Remove" ditekan, permintaan POST akan dikirim ke URL yang sesuai untuk menghapus item tersebut. Keduanya juga menyertakan token CSRF untuk melindungi dari serangan Cross-Site Request Forgery.
+
+## Buatlah navigation bar (navbar) untuk fitur-fitur pada aplikasi yang responsive terhadap perbedaan ukuran device, khususnya mobile dan desktop.
+
+   1. Buat terlebih dahulu struktur HTML untuk ```navbar.html``` sesuai kebutuhan pada app.
+      ```
+      ...
+      <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/"><img src="{% static 'img/logo.png' %}" alt="Logo"></a>
+               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                   <span class="navbar-toggler-icon"></span>
+               </button>
+               <div class="collapse navbar-collapse" id="navbarNav">
+                   <ul class="navbar-nav me-auto">
+                       <li class="nav-item">
+                           <a class="nav-link" href="/">Home</a>
+                       </li>
+                       <li class="nav-item">
+                           <a class="nav-link" href="{% url 'main:products' %}">Categories & Products</a>
+                       </li>
+                   </ul>
+                   <ul class="navbar-nav">
+                       <li class="nav-item">
+                           <a class="nav-link" href="{% url 'main:cart' %}">
+                               <i class="bi bi-cart"></i> Cart
+                           </a>
+                       </li>
+                       {% if user.is_authenticated %}
+                       <li class="nav-item dropdown">
+                           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                               {{ user.username }}
+                           </a>
+                           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                               <li><a class="dropdown-item" href="{% url 'main:account' %}">Account</a></li>
+                               <li><hr class="dropdown-divider"></li>
+                               <li><a class="dropdown-item" href="{% url 'main:logout' %}">Logout</a></li>
+                           </ul>
+                       </li>
+                       {% else %}
+                       <li class="nav-item">
+                           <a class="nav-link" href="{% url 'main:login' %}">Sign in</a>
+                       </li>
+                       {% endif %}
+                   </ul>
+               </div>
+           </div>
+      </nav>
+      ...
+      ```
+      Potongan code ini adalah implementasi navbar menggunakan framework ```Bootstrap``` dalam template Django. Saya membuat navbar ini agar bersifat responsive dan tetap berada di bagian atas halaman (```fixed-top```). Bagian pertama dari navbar berisi tautan ke ```Home``` dan ```Categories & Products```. Bagian kedua mencakup ikon cart yang mengarah ke halaman cart belanja. Jika user sudah terautentikasi, akan ditampilkan dropdown dengan nama user untuk mengakses akun dan logout. Jika tidak, tautan untuk masuk (```Sign in```) akan ditampilkan. Elemen-elemen seperti ```data-bs-toggle``` dan ```data-bs-target``` memungkinkan navbar untuk berfungsi dengan baik dalam mode responsive, sehingga tombol toggler akan muncul pada layar kecil untuk menampilkan menu navigasi.
+
+   2. Kustomisasi tampilan navbar dengan CSS. Berikut contoh potongan codenya.
+      ```
+      ...
+      .nav-link {
+          position: relative;
+          padding: 0.5rem 1rem;
+      }
+      
+      .nav-link::after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: 0;
+          left: 50%;
+          background-color: #000;
+          transition: all 0.3s ease;
+      }
+      
+      .nav-link:hover::after {
+          width: 100%;
+          left: 0;
+      }
+      ...
+      ```
+      Potongan code ini mendefinisikan style untuk tautan navigasi (```.nav-link```). Pertama, ```position: relative;``` pada ```.nav-link``` memungkinkan posisi absolut dari ```pseudo-elemen ::after```, yang digunakan untuk membuat garis bawah. Garis ini diatur dengan ```width: 0;```, sehingga tidak terlihat pada keadaan normal. Saat pengguna mengarahkan kursor ke tautan (```hover```), garis bawah akan meluas ke lebar penuh (```width: 100%;```) dan berpindah ke kiri (```left: 0;```), memberikan efek visual. Transisi yang smooth diatur oleh ```transition: all 0.3s ease;```, menciptakan page yang responsive dan meningkatkan tampilan navbar secara keseluruhan.
+
+   3. Berikut tampilan navbar versi desktop dan mobilenya.
+      
+      Versi desktop:
+      - ![image](https://github.com/user-attachments/assets/36eba6b5-af0f-4bc4-b2a5-bbf3319a2cad)
+
+      Versi mobile:
+      - ![image](https://github.com/user-attachments/assets/67eb33dc-928e-480a-bcc5-4ba56850da62)
+
+## Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
+
+Dalam CSS, urutan prioritas pengambilan selector ditentukan oleh spesifisitas dan urutan penulisan. Berikut urutan prioritasnya:
+
+1. ```Inline CSS```: Gaya yang ditetapkan langsung dalam atribut style elemen HTML memiliki prioritas tertinggi.
+2. ```ID Selector```: Selector yang menggunakan ID memiliki spesifisitas lebih tinggi daripada class dan tag.
+3. ```Class```, ```Attribute```, dan ```Pseudo-class Selector```: Selector yang menggunakan class, atribut, dan pseudo-class memiliki prioritas menengah.
+4. ```Type Selector``` dan ```Pseudo-element Selector```: Selector berdasarkan nama elemen (misalnya div, p) dan pseudo-element (misalnya ::before, ::after) memiliki prioritas rendah.
+5. ```Universal Selector```: Selector universal (*) memiliki spesifisitas paling rendah dan hanya digunakan sebagai fallback.
+
+## Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design!
+
+Responsive design adalah konsep penting dalam pembuatan aplikasi web karena memungkinkan tampilan dan fungsi situs web menyesuaikan diri dengan berbagai ukuran layar dan device. Dengan banyaknya user yang mengakses internet menggunakan ponsel, penting bagi situs web untuk mengoptimalkan user experience, tidak peduli apakah mereka menggunakan ponsel, tablet, atau komputer. Responsive design juga meningkatkan readability pada content app, memudahkan navigasi, dan lain-lain.
+
+Contoh app yang telah menerapkan responsive design: Web SIAK-NG
+Contoh app yang belum menerapkan responsive design: Pacil Web Service
+
+## Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!
+
+1. - Margin adalah ruang di luar elemen, yang digunakan untuk memberikan jarak antara satu elemen dengan yang lainnya. Margin tidak mengubah ukuran elemen itu sendiri, tetapi memengaruhi posisinya.
+   - Cara mengimplementasikan: Gunakan properti CSS seperti ```margin: 10px;``` untuk memberikan margin sebesar 10 piksel di semua sisi elemen, atau menggunakan margin-top, margin-right, margin-bottom, dan margin-left untuk mengatur margin secara spesifik.
+
+2. - Border adalah garis yang mengelilingi elemen, memberikan batas visual. Ini dapat memiliki berbagai warna, lebar, dan gaya.
+   - Cara mengimplementasikan: Gunakan ```border: 2px solid black;``` untuk memberikan border dengan lebar 2 piksel, gaya solid, dan warna hitam. Kita juga dapat mengatur border pada sisi tertentu dengan menggunakan border-top, border-right, border-bottom, dan border-left.
+
+3. - Padding adalah ruang di dalam elemen, antara konten dan batas (border). Padding memberikan ruang agar isi elemen tidak langsung menyentuh border.
+   - Cara mengimplementasikan: Gunakan ```padding: 10px;``` untuk memberikan padding sebesar 10 piksel di semua sisi elemen, atau menggunakan padding-top, padding-right, padding-bottom, dan padding-left untuk mengatur padding secara spesifik.
+
+## Jelaskan konsep flex box dan grid layout beserta kegunaannya!
+
+1. - Flexbox: Flexbox adalah sistem tata letak satu dimensi yang memungkinkan elemen dalam kontainer disusun dalam baris atau kolom. Dengan menggunakan properti seperti ```flex-direction```, ```justify-content```, dan ```align-items```, kita dapat mengatur ruang dan perataan elemen dengan mudah.
+   - Kegunaan: Flexbox sangat membantu dalam membuat desain yang responsif, karena elemen dapat menyesuaikan ukuran dan posisinya sesuai dengan ruang yang ada. Selain itu, Flexbox ideal untuk perataan elemen dalam satu dimensi (baik horizontal maupun vertikal), sehingga sering digunakan untuk menu, toolbar, atau daftar.
+  
+2. - Grid Layout: Grid Layout adalah sistem tata letak dua dimensi yang memungkinkan pengembang untuk mengatur elemen dalam baris dan kolom sekaligus. Dengan menggunakan properti seperti ```grid-template-columns```, ```grid-template-rows```, dan ```grid-area```, kita dapat menciptakan tata letak yang lebih terstruktur dan kompleks.
+   - Kegunaan: Grid Layout sangat baik untuk membuat desain yang lebih rumit dan terorganisir, seperti tata letak halaman web, galeri foto, atau dashboard. Selain itu, Grid memberikan kontrol yang lebih besar terhadap penempatan elemen, memungkinkan pengembang menentukan ukuran dan posisi elemen dengan lebih akurat.
+
 # Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
 
    1. Aktifkan virtual environment, lalu pergi ke ```views.py``` pada direktori ```main```.
@@ -122,7 +415,7 @@
    1. Membuat dua akun pengguna sebagai dummy data dengan pergi ke page register, lalu login pada page ```login```.
       ![image](https://github.com/user-attachments/assets/80696e62-c1e5-4556-bc89-0ae4ba70df36)
       ![image](https://github.com/user-attachments/assets/cee9d038-7092-48c2-a673-2dae7db72c61)
-      Ini tampilan ketika user sudah login, lalu pergi ke halaman ```cart```dan belum memasukkan produk ke dalam keranjang (artinya belum ada data input produk untuk dimasukkan dalam cart)
+      Ini tampilan ketika user sudah login, lalu pergi ke halaman ```cart```dan belum memasukkan produk ke dalam cart (artinya belum ada data input produk untuk dimasukkan dalam cart)
       ![image](https://github.com/user-attachments/assets/621751d9-ce9f-4c2b-b170-b0ae0cb09acb)
 
    2. Lalu coba tambahkan 3 produk ke dalam cart dengan menggunakan user yang saat ini sedang login.
@@ -149,7 +442,7 @@
       ```
       ```User``` dari ```django.contrib.auth.models``` adalah model default Django yang mewakili user di aplikasi Django.
       
-   2. Disini saya membuat suatu model baru bernama ```Cart``` yang berfungsi untuk menyimpan product yang dimasukkan ke dalam keranjang pada masing-masing user. Berikut potongan codenya:
+   2. Di sini saya membuat suatu model baru bernama ```Cart``` yang berfungsi untuk menyimpan product yang dimasukkan ke dalam cart pada masing-masing user. Berikut potongan codenya:
       ```
       ...
       class Cart(models.Model):
@@ -160,9 +453,9 @@
           cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
       ...
       ```
-      Relasi ```OneToOneField``` ke model User. Ini berarti setiap user hanya dapat memiliki satu keranjang, dan keranjang ini terhubung langsung ke user yang bersangkutan. Jika user dihapus, maka keranjang juga ikut dihapus (```on_delete=models.CASCADE```). Lalu, model ```CartItem``` digunakan untuk menyimpan setiap item yang ada di dalam keranjang belanja,
+      Relasi ```OneToOneField``` ke model User. Ini berarti setiap user hanya dapat memiliki satu cart, dan cart ini terhubung langsung ke user yang bersangkutan. Jika user dihapus, maka cart juga ikut dihapus (```on_delete=models.CASCADE```). Lalu, model ```CartItem``` digunakan untuk menyimpan setiap item yang ada di dalam cart belanja,
       
-   3. Sekarang, pergi ke ```views.py``` yang pada direktori main, buatlah suatu fungsi yang berfungsi untuk menambahkan produk ke keranjang masing-masing usernya.
+   3. Sekarang, pergi ke ```views.py``` yang pada direktori main, buatlah suatu fungsi yang berfungsi untuk menambahkan produk ke cart masing-masing usernya.
       ```
       @require_POST
       @login_required(login_url='/login')
@@ -172,7 +465,7 @@
           cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
           return JsonResponse({'status': 'success', 'message': f'{product.name} added to cart'})
        ```
-      Decorator ```@require_POST``` dan ```@login_required(login_url='/login')``` berfungsi untuk memastikan bahwa view hanya merespons permintaan HTTP POST dan memastikan bahwa hanya user yang sudah login dapat mengakses view ini. Jika user belum login, mereka akan diarahkan ke halaman login (```/login```). Lalu, fungsi ```get_or_create``` berfungsi untuk mendapatkan objek ```Cart``` yang dimiliki oleh user saat ini (```request.user```). Jika user belum memiliki keranjang, fungsi ini akan otomatis membuat keranjang baru untuk user. ```created``` adalah boolean yang menunjukkan apakah keranjang baru dibuat atau tidak. Jika keranjang sudah ada, ```created``` akan bernilai False, jika tidak, maka True. Fungsi ini juga mengembalikan respons dalam format JSON.
+      Decorator ```@require_POST``` dan ```@login_required(login_url='/login')``` berfungsi untuk memastikan bahwa view hanya merespons permintaan HTTP POST dan memastikan bahwa hanya user yang sudah login dapat mengakses view ini. Jika user belum login, mereka akan diarahkan ke halaman login (```/login```). Lalu, fungsi ```get_or_create``` berfungsi untuk mendapatkan objek ```Cart``` yang dimiliki oleh user saat ini (```request.user```). Jika user belum memiliki cart, fungsi ini akan otomatis membuat cart baru untuk user. ```created``` adalah boolean yang menunjukkan apakah cart baru dibuat atau tidak. Jika cart sudah ada, ```created``` akan bernilai False, jika tidak, maka True. Fungsi ini juga mengembalikan respons dalam format JSON.
 
    5. Lakukan migrasi model dengan ```python manage.py makemigrations``` yang dilanjutkan dengan ```python manage.py migrate```.
       
@@ -224,7 +517,7 @@
       ```
       Apabila input valid dan user berhasil login, maka cookie bernama ```last_login``` diatur untuk menyimpan waktu login terakhir dengan nilai berupa string dari waktu saat ini (```datetime.datetime.now()```).
 
-   3. Selanjutnya, pada fungsi ```account_page```, tambahkan potongan kode ```'last_login': request.COOKIES['last_login']``` ke dalam variabel context.
+   3. Selanjutnya, pada fungsi ```account_page```, tambahkan potongan code ```'last_login': request.COOKIES['last_login']``` ke dalam variabel context.
       ```
       ...
       context = {
@@ -255,7 +548,7 @@
    6. Jalankan ```python manage.py runserver```.
    
 ## Apa perbedaan antara HttpResponseRedirect() dan redirect()
-   ```HttpResponseRedirect()``` dan ```redirect()``` pada dasarnya adalah dua cara untuk melakukan redirection dalam Django. ```HttpResponseRedirect()``` adalah class yang merupakan bagian dari modul ```django.http``` dan menghasilkan respons HTTP dengan kode status 302 secara default, sementara ```redirect()``` adalah fungsi yang merupakan bagian dari modul ```django.shortcuts``` dan sebenarnya menggunakan ```HttpResponseRedirect()``` di balik layar. Perbedaan keduanya terletak pada fleksibilitasnya. ```HttpResponseRedirect()``` membutuhkan URL lengkap atau path absolut, sedangkan ```redirect()``` dapat menerima berbagai jenis argumen seperti nama view, URL lengkap, atau bahkan model objects, yang artinya membuatnya lebih fleksibel dan mudah digunakan dalam berbagai skema. Selain itu, ```redirect()``` secara otomatis menangani pembentukan URL yang tepat menggunakan fungsi ```reverse()``` ketika diberikan nama view, sehingga lebih aman terhadap perubahan konfigurasi URL.
+   ```HttpResponseRedirect()``` dan ```redirect()``` pada dasarnya adalah dua cara untuk melakukan redirection dalam Django. ```HttpResponseRedirect()``` adalah class yang merupakan bagian dari modul ```django.http``` dan menghasilkan respons HTTP dengan code status 302 secara default, sementara ```redirect()``` adalah fungsi yang merupakan bagian dari modul ```django.shortcuts``` dan sebenarnya menggunakan ```HttpResponseRedirect()``` di balik layar. Perbedaan keduanya terletak pada fleksibilitasnya. ```HttpResponseRedirect()``` membutuhkan URL lengkap atau path absolut, sedangkan ```redirect()``` dapat menerima berbagai jenis argumen seperti nama view, URL lengkap, atau bahkan model objects, yang artinya membuatnya lebih fleksibel dan mudah digunakan dalam berbagai skema. Selain itu, ```redirect()``` secara otomatis menangani pembentukan URL yang tepat menggunakan fungsi ```reverse()``` ketika diberikan nama view, sehingga lebih aman terhadap perubahan konfigurasi URL.
 
 ## Jelaskan cara kerja penghubungan model Product dengan User!
 
@@ -276,7 +569,7 @@
         return self.name
    ```
    - Model Product memiliki berbagai field, seperti ```name```, ```price```, ```description```, ```stock```, dan ```image```, untuk menyimpan informasi tentang produk.
-   - Model ini memiliki hubungan dengan ```CartItem```. Model ```CartItem``` memiliki relasi ```ForeignKey``` ke model ```Product```, yang memungkinkan setiap item dalam keranjang belanja untuk terkait dengan satu produk tertentu. Dengan demikian, kita dapat menyimpan informasi produk yang ditambahkan ke keranjang dan kuantitasnya.
+   - Model ini memiliki hubungan dengan ```CartItem```. Model ```CartItem``` memiliki relasi ```ForeignKey``` ke model ```Product```, yang memungkinkan setiap item dalam cart belanja untuk terkait dengan satu produk tertentu. Dengan demikian, kita dapat menyimpan informasi produk yang ditambahkan ke cart dan kuantitasnya.
 
    Model CartItem.
    ```
@@ -293,8 +586,8 @@
     def total_price(self):
         return self.quantity * self.product.price
    ```
-   - Model CartItem memiliki field ```quantity``` yang berguna untuk menyimpan jumlah produk yang ditambahkan ke keranjang.
-   - Model ini memiliki hubungan dengan ```Cart``` dan ```Product```: Model ini memiliki dua relasi ```ForeignKey```, satu untuk cart yang menghubungkannya dengan model ```Cart```, dan satu lagi untuk product yang menghubungkannya dengan model ```Product```. Ini memungkinkan kita untuk menyimpan detail spesifik tentang produk dalam keranjang belanja dan jumlahnya.
+   - Model CartItem memiliki field ```quantity``` yang berguna untuk menyimpan jumlah produk yang ditambahkan ke cart.
+   - Model ini memiliki hubungan dengan ```Cart``` dan ```Product```: Model ini memiliki dua relasi ```ForeignKey```, satu untuk cart yang menghubungkannya dengan model ```Cart```, dan satu lagi untuk product yang menghubungkannya dengan model ```Product```. Ini memungkinkan kita untuk menyimpan detail spesifik tentang produk dalam cart belanja dan jumlahnya.
 
    Model Cart.
    ```
@@ -307,17 +600,17 @@
        def __str__(self):
            return f"Cart for {self.user.username}"
    ```
-   - Model Cart berfungsi sebagai keranjang belanja user. Model ini memiliki field ```user```, yang menggunakan ```OneToOneField``` untuk menghubungkan setiap keranjang belanja dengan satu user. Ini berarti setiap user hanya dapat memiliki satu keranjang belanja.
-   - Model ini memiliki hubungan dengan ```CartItem```. Model ```Cart``` juga memiliki relasi ```ForeignKey``` dengan model ```CartItem```. Ini memungkinkan kita untuk mengaitkan beberapa item ke dalam satu keranjang. Dengan relasi ini, kita dapat menyimpan berbagai produk yang ditambahkan oleh user ke dalam keranjang.
+   - Model Cart berfungsi sebagai cart belanja user. Model ini memiliki field ```user```, yang menggunakan ```OneToOneField``` untuk menghubungkan setiap cart belanja dengan satu user. Ini berarti setiap user hanya dapat memiliki satu cart belanja.
+   - Model ini memiliki hubungan dengan ```CartItem```. Model ```Cart``` juga memiliki relasi ```ForeignKey``` dengan model ```CartItem```. Ini memungkinkan kita untuk mengaitkan beberapa item ke dalam satu cart. Dengan relasi ini, kita dapat menyimpan berbagai produk yang ditambahkan oleh user ke dalam cart.
 
    Penghubungan model ```Product```, ```CartItem```, ```Cart``` dengan User.
-   1. Membuat Keranjang untuk User: Ketika user mendaftar atau login, Django membuatkan entri baru di model ```Cart``` untuk user tersebut, jika belum ada. Hal ini menghubungkan user dengan keranjang belanja user tersebut.
+   1. Membuat cart untuk User: Ketika user mendaftar atau login, Django membuatkan entri baru di model ```Cart``` untuk user tersebut, jika belum ada. Hal ini menghubungkan user dengan cart belanja user tersebut.
 
-   2. Menambahkan Produk ke Keranjang: Ketika user menambahkan produk ke keranjang, aplikasi membuat entri baru di model ```CartItem```, yang menghubungkan produk yang dipilih dengan keranjang user. Jika produk sudah ada di keranjang, kuantitasnya akan diperbarui.
+   2. Menambahkan Produk ke cart: Ketika user menambahkan produk ke cart, aplikasi membuat entri baru di model ```CartItem```, yang menghubungkan produk yang dipilih dengan cart user. Jika produk sudah ada di cart, kuantitasnya akan diperbarui.
 
-   3. Mengambil Informasi Keranjang: Saat user ingin melihat keranjang belanja mereka, aplikasi dapat mengambil semua item dari model ```CartItem``` yang terkait dengan model ```Cart```, dan dari situ, kita bisa mengakses informasi produk yang relevan melalui relasi ```ForeignKey```.
+   3. Mengambil Informasi cart: Saat user ingin melihat cart belanja mereka, aplikasi dapat mengambil semua item dari model ```CartItem``` yang terkait dengan model ```Cart```, dan dari situ, kita bisa mengakses informasi produk yang relevan melalui relasi ```ForeignKey```.
 
-   4. Menghitung Total Harga: Model ```CartItem``` memiliki properti ```total_price``` yang menghitung harga total berdasarkan kuantitas dan harga produk. Ini memungkinkan aplikasi untuk menampilkan total biaya keranjang kepada user.
+   4. Menghitung Total Harga: Model ```CartItem``` memiliki properti ```total_price``` yang menghitung harga total berdasarkan kuantitas dan harga produk. Ini memungkinkan aplikasi untuk menampilkan total biaya cart kepada user.
 
 ## Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.
 
@@ -344,7 +637,7 @@
 
    Django mengingat user yang telah login menggunakan mekanisme sesi dan cookies. Saat user berhasil login, Django membuat session unik yang disimpan di backend, dan mengirimkan ID session ke browser user sebagai cookie. Cookie ini biasanya bernama ```sessionid```, digunakan oleh Django untuk mengidentifikasi user pada setiap request berikutnya. Setiap kali user mengirimkan request, Django memeriksa cookie session tersebut untuk mengambil informasi autentikasi dari backend session, memungkinkan sistem untuk mengenali apakah user sudah login dan siapa usernya. Session ini dapat diatur agar berakhir karena pengguna logout, browser ditutup, atau session kedaluwarsa.
 
-   Selain session, cookies memiliki berbagai kegunaan lain, seperti menyimpan preferensi user, seperti tema situs, bahasa yang dipilih, atau pengaturan tampilan. Cookies juga digunakan untuk melakukan tracking aktivitas user di berbagai page, yang bermanfaat untuk analitik mengenai personalisasi konten atau menampilkan iklan yang relevan. Selain itu, cookies mendukung fitur autentikasi berkelanjutan seperti "Remember Me," yang memungkinkan user tetap login saat mereka kembali ke situs tanpa harus melakukan login ulang. Dalam aplikasi e-commerce, cookies sering menyimpan informasi tentang item yang ditambahkan ke keranjang belanja, meskipun user belum login atau belum menyelesaikan pembelian.
+   Selain session, cookies memiliki berbagai kegunaan lain, seperti menyimpan preferensi user, seperti tema situs, bahasa yang dipilih, atau pengaturan tampilan. Cookies juga digunakan untuk melakukan tracking aktivitas user di berbagai page, yang bermanfaat untuk analitik mengenai personalisasi konten atau menampilkan iklan yang relevan. Selain itu, cookies mendukung fitur autentikasi berkelanjutan seperti "Remember Me," yang memungkinkan user tetap login saat mereka kembali ke situs tanpa harus melakukan login ulang. Dalam aplikasi e-commerce, cookies sering menyimpan informasi tentang item yang ditambahkan ke cart belanja, meskipun user belum login atau belum menyelesaikan pembelian.
 
    Tidak semua cookies aman. Cookies dapat dicegat oleh pihak ketiga jika situs tidak menggunakan protokol yang secure. Untuk melindunginya, maka yang dapat dilakukan yaitu menggunakan atribut ```Secure``` pada cookies untuk memastikan bahwa cookies hanya dikirim melalui koneksi yang aman. Selain itu, cookies yang disimpan di browser dapat dimodifikasi oleh user. Django menyimpan informasi autentikasi di server-side dan hanya menggunakan ID session di cookies. Risiko lainnya terdapat serangan Cross-Site Scripting (XSS), yang artinya script berbahaya dapat mencuri cookies. untuk mengurangi risiko ini, atribut ```HttpOnly``` dapat digunakan untuk mencegah akses JavaScript ke cookies, serta atribut ```SameSite``` untuk melindungi cookies dari serangan CSRF (Cross-Site Request Forgery). Selain itu, cookies harus memiliki masa berlaku yang terbatas (timeout) agar tidak tetap aktif setelah waktu tertentu.
    
@@ -406,7 +699,7 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       ...
       ]
       ```
-      Disini saya melakukan konfigurasi routing fungsi ```create_product_entry``` sebagai view pada page ```account```.
+      Di sini saya melakukan konfigurasi routing fungsi ```create_product_entry``` sebagai view pada page ```account```.
    
    6. Setelah path URL diatur pada urls.py, maka implementasikan form yang telah dibuat pada page HTML. Berikut contoh implementasi mengenai potongan codenya.
       ```
@@ -444,7 +737,7 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
       ```
       - ```HttpResponse``` adalah salah satu kelas bawaan dari Django yang digunakan untuk mengirimkan respon HTTP ke client.
       - ```serializers``` adalah modul dari Django yang digunakan untuk mengubah data query menjadi format serializable yang dapat diproses lebih lanjut, seperti JSON, XML, dan lain-lain.
-   3. Disini saya buat suatu fungsi bernama ```serialize_data``` yang menerima parameter ```request```, ```model```, ```fmt```(format JSON atau XML), dan ```id```. Ini dilakukan untuk menghindari inisialisasi variabel yang berulang.
+   3. Di sini saya buat suatu fungsi bernama ```serialize_data``` yang menerima parameter ```request```, ```model```, ```fmt```(format JSON atau XML), dan ```id```. Ini dilakukan untuk menghindari inisialisasi variabel yang berulang.
       ```
       def serialize_data(request, model, fmt, id=None):
           if id:
