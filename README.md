@@ -139,7 +139,7 @@
       ...
       ```
       Jika kondisi di dalam ```{% if cart_items %}``` tidak terpenuhi (artinya tidak ada item dalam keranjang), maka bagian di dalam ```{% else %}``` akan dieksekusi. Di sini, terdapat sebuah div dengan class ```empty-cart-message```, yang berisi elemen paragraf ```<p>``` yang menampilkan pesan "Your cart is empty." 
-      - ![image](https://github.com/user-attachments/assets/e59db246-63f3-4b4a-b5f7-ee7ffbb22c21)
+      - ![image](https://github.com/user-attachments/assets/55b45fcc-1edc-47ca-bf4d-fa3d1321ae01)
 
       Ketika terdapat item yang telah ditambahkan pada cart.
       ```
