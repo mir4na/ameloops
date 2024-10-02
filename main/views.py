@@ -42,7 +42,8 @@ def register_user(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save() 
+            Cart.objects.create(user=user)
             messages.success(request, 'Successfully created an account!')
             return redirect('main:login')
         else:
@@ -50,8 +51,7 @@ def register_user(request):
     else:
         form = UserCreationForm()
     
-    context = {'form': form}
-    return render(request, 'register.html', context)
+    return render(request, 'register.html', {'form': form})
 
 @login_required(login_url='/login')
 def logout_user(request):
@@ -71,15 +71,17 @@ def products_page(request):
 
 @login_required(login_url='/login')
 def cart_page(request):
-    cart = get_object_or_404(Cart, user=request.user)
+    cart, created = Cart.objects.get_or_create(user=request.user)  # Create cart if it doesn't exist
     cart_items = CartItem.objects.filter(cart=cart)
-    total = sum(item.total_price for item in cart_items)
+    
+    total = sum(item.total_price for item in cart_items) if cart_items.exists() else 0
     
     context = {
         'cart_items': cart_items,
         'total': total,
     }
     return render(request, 'cart.html', context)
+
 
 @require_POST
 @login_required(login_url='/login')
