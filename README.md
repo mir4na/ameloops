@@ -4,9 +4,10 @@
 
 - Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
 
-# Tugas 5: Desain Web menggunakan HTML, CSS dan Framework CSS
-
-## Implementasikan fungsi untuk menghapus dan mengedit product.
+<details>
+   <summary><b>Tugas 5: Desain Web menggunakan HTML, CSS dan Framework CSS</b></summary>
+   
+   ## Implementasikan fungsi untuk menghapus dan mengedit product.
 
    1. Pergi ke ```models.py``` pada direktori ```main```.
 
@@ -296,8 +297,12 @@ Contoh app yang belum menerapkan responsive design: Pacil Web Service
   
 2. - Grid Layout: Grid Layout adalah sistem tata letak dua dimensi yang memungkinkan pengembang untuk mengatur elemen dalam baris dan kolom sekaligus. Dengan menggunakan properti seperti ```grid-template-columns```, ```grid-template-rows```, dan ```grid-area```, kita dapat menciptakan tata letak yang lebih terstruktur dan kompleks.
    - Kegunaan: Grid Layout sangat baik untuk membuat desain yang lebih rumit dan terorganisir, seperti tata letak halaman web, galeri foto, atau dashboard. Selain itu, Grid memberikan kontrol yang lebih besar terhadap penempatan elemen, memungkinkan pengembang menentukan ukuran dan posisi elemen dengan lebih akurat.
+</details>
 
-# Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
+<details>
+   <summary><b>Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django</b></summary>
+
+## Mengimplementasikan fungsi registrasi, login, dan logout untuk memungkinkan pengguna untuk mengakses aplikasi sebelumnya dengan lancar.
 
    1. Aktifkan virtual environment, lalu pergi ke ```views.py``` pada direktori ```main```.
       
@@ -643,8 +648,10 @@ Contoh app yang belum menerapkan responsive design: Pacil Web Service
    
    Berikut skema mengenai serangan XSS:
    ![image](https://github.com/user-attachments/assets/cbb1d7f2-2b92-4575-8d7e-4e407512f95a)
+</details>
 
-# Tugas 3: Implementasi Form dan Data Delivery pada Django
+<details>
+   <summary><b>Tugas 3: Implementasi Form dan Data Delivery pada Django</b></summary>
 
 Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-poin dalam checklist:
 
@@ -850,11 +857,12 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
    1. Lakukan command ```git add .``` pada terminal. Command ini berfungsi untuk menyimpan semua perubahan pada file ke staging area.
    2. Setelah itu, lakukan command ```git commit -m [message]```. Command ini berfungsi untuk menyimpan commit ke staging area disertai dengan adanya pesan singkat yang deskriptif.
    3. Lalu, lakukan command ```git push -u origin [nama branch]```. Command ini berfungsi untuk mengirim(push) perubahan dari branch lokal ke remote repository yang bernama origin. 
+</details>
 
+<details>
+   <summary><b>Tugas 2: Pengenalan Aplikasi Django dan Model-View-Template (MVT) pada Django</b></summary>
 
-# Tugas 2: Pengenalan Aplikasi Django dan Model-View-Template (MVT) pada Django
-
-Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-poin dalam checklist:
+   Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-poin dalam checklist:
 
 ## Membuat proyek Django baru
    1. Buat atau cari suatu direktori sebagai tempat untuk mengembangkan proyek.
@@ -1105,3 +1113,5 @@ book_to_delete = Book.objects.get(id=2)
 book_to_delete.delete()
 ```
 ---
+
+</details>
