@@ -162,11 +162,9 @@
         <h1 class="cart-title">Shopping Cart</h1>
         
         <div id="cart-items" class="cart-items">
-            <!-- Cart items will be dynamically inserted here -->
         </div>
         
         <div id="cart-total" class="cart-total">
-            <!-- Total will be dynamically inserted here -->
         </div>
         
         <div id="empty-cart-message" class="empty-cart-message" style="display: none;">
@@ -226,7 +224,6 @@
                     </div>
                 </div>
             `).join('');
-
             cartTotalElement.textContent = `Total: ${rupiah_format(cartData.total)}`;
         }
     }
