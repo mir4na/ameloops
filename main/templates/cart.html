@@ -161,48 +161,140 @@
     <div class="cart-container">
         <h1 class="cart-title">Shopping Cart</h1>
         
-        {% if cart_items %}
-            <div class="cart-items">
-                {% for item in cart_items %}
-                <div class="cart-item">
-                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-image">
-                    <div class="cart-item-details">
-                        <div class="cart-item-name">{{ item.product.name }}</div>
-                        <div class="cart-item-price">{{ item.product.price|rupiah_format }}</div>
-                    </div>
-                    <div class="cart-item-actions">
-                        <form method="post" action="{% url 'main:edit_cart_item' item.id %}">
-                            {% csrf_token %}
-                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="quantity-input">
-                            <button type="submit" class="action-button">Update</button>
-                        </form>
-                        <form method="post" action="{% url 'main:remove_from_cart' item.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="action-button">Remove</button>
-                        </form>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <div class="cart-total">
-                Total: {{ total|rupiah_format }}
-            </div>
-        {% else %}
-            <div class="empty-cart-message">
-                <p>Your cart is empty.</p>
-                <img src="{% static 'img/shocked.png' %}" class="template" >
-            </div>
-        {% endif %}
+        <div id="cart-items" class="cart-items">
+            <!-- Cart items will be dynamically inserted here -->
+        </div>
+        
+        <div id="cart-total" class="cart-total">
+            <!-- Total will be dynamically inserted here -->
+        </div>
+        
+        <div id="empty-cart-message" class="empty-cart-message" style="display: none;">
+            <p>Your cart is empty.</p>
+            <img src="{% static 'img/shocked.png' %}" class="template">
+        </div>
     </div>
 </div>
 
 <script>
-    document.querySelectorAll('.quantity-input').forEach(input => {
-        input.addEventListener('change', function() {
-            if (this.value < 1) {
-                this.value = 1;
-            } else if (this.value > parseInt(this.getAttribute('max'))) {
-                this.value = this.getAttribute('max');
+    async function fetchCartData() {
+        try {
+            console.log('Fetching cart data...');
+            const response = await fetch('{% url "main:get_cart_data" %}');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log('Received cart data:', data);
+            return data;
+        } catch (error) {
+            console.error('Error fetching cart data:', error);
+        }
+    }
+
+    function renderCartItems(cartData) {
+        console.log('Rendering cart items:', cartData);
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartTotalElement = document.getElementById('cart-total');
+        const emptyCartMessage = document.getElementById('empty-cart-message');
+
+        if (!cartItemsContainer || !cartTotalElement || !emptyCartMessage) {
+            console.error('One or more required elements not found in the DOM');
+            return;
+        }
+
+        if (cartData.cart_items.length === 0) {
+            cartItemsContainer.style.display = 'none';
+            cartTotalElement.style.display = 'none';
+            emptyCartMessage.style.display = 'block';
+        } else {
+            cartItemsContainer.style.display = 'flex';
+            cartTotalElement.style.display = 'block';
+            emptyCartMessage.style.display = 'none';
+
+            cartItemsContainer.innerHTML = cartData.cart_items.map(item => `
+                <div class="cart-item">
+                    <img src="${item.image_url}" alt="${item.product_name}" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">${item.product_name}</div>
+                        <div class="cart-item-price">${rupiah_format(item.product_price)}</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <input type="number" name="quantity" value="${item.quantity}" min="1" max="${item.stock}" class="quantity-input" data-item-id="${item.id}">
+                        <button class="action-button update-quantity" data-item-id="${item.id}">Update</button>
+                        <button class="action-button remove-item" data-item-id="${item.id}">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+
+            cartTotalElement.textContent = `Total: ${rupiah_format(cartData.total)}`;
+        }
+    }
+
+    function rupiah_format(value) {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
+    }
+
+    async function updateQuantity(itemId, newQuantity) {
+        try {
+            const response = await fetch(`{% url 'main:edit_cart_item' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', itemId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `quantity=${newQuantity}`
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const updatedCartData = await fetchCartData();
+            renderCartItems(updatedCartData);
+        } catch (error) {
+            console.error('Error updating quantity:', error);
+        }
+    }
+
+    async function removeItem(itemId) {
+        try {
+            const response = await fetch(`{% url 'main:remove_from_cart' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', itemId), {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const updatedCartData = await fetchCartData();
+            renderCartItems(updatedCartData);
+        } catch (error) {
+            console.error('Error removing item:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        console.log('DOM fully loaded and parsed');
+        const cartData = await fetchCartData();
+        if (cartData) {
+            renderCartItems(cartData);
+        } else {
+            console.error('Failed to fetch cart data');
+        }
+
+        document.addEventListener('click', async (event) => {
+            if (event.target.classList.contains('update-quantity')) {
+                const itemId = event.target.getAttribute('data-item-id');
+                const quantityInput = document.querySelector(`.quantity-input[data-item-id="${itemId}"]`);
+                const newQuantity = quantityInput.value;
+                await updateQuantity(itemId, newQuantity);
+            } else if (event.target.classList.contains('remove-item')) {
+                const itemId = event.target.getAttribute('data-item-id');
+                await removeItem(itemId);
             }
         });
     });
