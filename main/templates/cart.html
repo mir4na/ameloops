@@ -162,6 +162,7 @@
     <div class="cart-container">
         <h1 class="cart-title">Shopping Cart</h1>
         
+<<<<<<< HEAD
         {% if cart_items %}
             <div class="cart-items">
                 {% for item in cart_items %}
@@ -192,6 +193,20 @@
                 <img src="{% static 'img/shocked.png' %}" class="template">
             </div>
         {% endif %}
+=======
+        <div id="cart-items" class="cart-items">
+            <!-- Cart items will be dynamically inserted here -->
+        </div>
+        
+        <div id="cart-total" class="cart-total">
+            <!-- Total will be dynamically inserted here -->
+        </div>
+        
+        <div id="empty-cart-message" class="empty-cart-message" style="display: none;">
+            <p>Your cart is empty.</p>
+            <img src="{% static 'img/shocked.png' %}" class="template">
+        </div>
+>>>>>>> parent of 26872bf (tugas 6 done)
     </div>
 </div>
 
@@ -217,6 +232,7 @@
             }
         }
 
+<<<<<<< HEAD
         document.querySelectorAll('.edit-quantity-form').forEach(form => {
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -230,6 +246,68 @@
                     document.getElementById(`item-total-${itemId}`).textContent = response.item_total_formatted;
                 } else if (response) {
                     alert(response.message);
+=======
+        if (cartData.cart_items.length === 0) {
+            cartItemsContainer.style.display = 'none';
+            cartTotalElement.style.display = 'none';
+            emptyCartMessage.style.display = 'block';
+        } else {
+            cartItemsContainer.style.display = 'flex';
+            cartTotalElement.style.display = 'block';
+            emptyCartMessage.style.display = 'none';
+
+            cartItemsContainer.innerHTML = cartData.cart_items.map(item => `
+                <div class="cart-item">
+                    <img src="${item.image_url}" alt="${item.product_name}" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">${item.product_name}</div>
+                        <div class="cart-item-price">${rupiah_format(item.product_price)}</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <input type="number" name="quantity" value="${item.quantity}" min="1" max="${item.stock}" class="quantity-input" data-item-id="${item.id}">
+                        <button class="action-button update-quantity" data-item-id="${item.id}">Update</button>
+                        <button class="action-button remove-item" data-item-id="${item.id}">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+
+            cartTotalElement.textContent = `Total: ${rupiah_format(cartData.total)}`;
+        }
+    }
+
+    function rupiah_format(value) {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
+    }
+
+    async function updateQuantity(itemId, newQuantity) {
+        try {
+            const response = await fetch(`{% url 'main:edit_cart_item' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', itemId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `quantity=${newQuantity}`
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const updatedCartData = await fetchCartData();
+            renderCartItems(updatedCartData);
+        } catch (error) {
+            console.error('Error updating quantity:', error);
+        }
+    }
+
+    async function removeItem(itemId) {
+        try {
+            const response = await fetch(`{% url 'main:remove_from_cart' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', itemId), {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+>>>>>>> parent of 26872bf (tugas 6 done)
                 }
             });
         });
