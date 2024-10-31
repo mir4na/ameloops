@@ -7,11 +7,13 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import *
+from django.utils.html import strip_tags
 import datetime
 from django.http import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.urls import reverse
-
+from .templatetags.rupiah_filter import rupiah_format
 
 def show_main(request):
     context = {
@@ -71,7 +73,7 @@ def products_page(request):
 
 @login_required(login_url='/login')
 def cart_page(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)  # Create cart if it doesn't exist
+    cart, created = Cart.objects.get_or_create(user=request.user) 
     cart_items = CartItem.objects.filter(cart=cart)
     
     total = sum(item.total_price for item in cart_items) if cart_items.exists() else 0
@@ -89,7 +91,6 @@ def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart, created = Cart.objects.get_or_create(user=request.user)
     cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
-
     return JsonResponse({'status': 'success', 'message': f'{product.name} added to cart'})
 
 @login_required(login_url='/login')
@@ -98,12 +99,12 @@ def account_page(request):
         if 'category_name' in request.POST:
             category_name = request.POST['category_name']
             Category.objects.create(name=category_name)
-            return redirect('main:products')  # Redirect ke halaman produk
+            return redirect('main:products')
         else:
             form = ProductForm(request.POST, request.FILES)
             if form.is_valid():
                 form.save()
-                return redirect('main:products')  # Redirect ke halaman produk
+                return redirect('main:products')
     else:
         form = ProductForm()
     
@@ -113,45 +114,66 @@ def account_page(request):
     }
     return render(request, 'account.html', context)
 
+@require_POST
+@csrf_protect
 @login_required(login_url='/login')
 def remove_from_cart(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
     cart_item.delete()
-    return HttpResponseRedirect(reverse('main:cart'))
+    cart = Cart.objects.get(user=request.user)
+    total = sum(item.total_price for item in CartItem.objects.filter(cart=cart))
+    return JsonResponse({
+        'status': 'success', 
+        'message': 'Item removed from cart', 
+        'total': total,
+        'total_formatted': rupiah_format(total) 
+    })
 
+@require_POST
+@csrf_protect
 @login_required(login_url='/login')
 def edit_product(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
-    if request.method == 'POST':
-        new_quantity = int(request.POST.get('quantity', 1))
-        if new_quantity > 0 and new_quantity <= cart_item.product.stock:
-            cart_item.quantity = new_quantity
-            cart_item.save()
-        else:
-            messages.error(request, 'Invalid quantity.')
-    return HttpResponseRedirect(reverse('main:cart'))
-
-def create_product_entry(request):
-    form = ProductForm(request.POST or None, request.FILES or None)
-    if request.method == "POST":
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.user = request.user
-            product.save()
-            return redirect('main:products')
-        else:
-            return render(request, "account.html", {'form': form, 'error': 'Form is invalid'})
-    return render(request, "account.html", {'form': form})
-
-def create_category(request):
-    if request.method == 'POST':
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            form.save()  # Simpan kategori baru ke database
-            return redirect('main:account')  # Redirect ke halaman account setelah penambahan
+    new_quantity = int(request.POST.get('quantity', 1))
+    if new_quantity > 0 and new_quantity <= cart_item.product.stock:
+        cart_item.quantity = new_quantity
+        cart_item.save()
+        cart = Cart.objects.get(user=request.user)
+        total = sum(item.total_price for item in CartItem.objects.filter(cart=cart))
+        return JsonResponse({
+            'status': 'success', 
+            'message': 'Quantity updated', 
+            'new_quantity': new_quantity,
+            'item_total': cart_item.total_price,
+            'item_total_formatted': rupiah_format(cart_item.total_price),
+            'total': total,
+            'total_formatted': rupiah_format(total)
+        })
     else:
-        form = CategoryForm()  # Tampilkan form kosong jika GET request
-    return render(request, 'account.html', {'category_form': form})
+        return JsonResponse({'status': 'error', 'message': 'Invalid quantity'}, status=400)
+
+@csrf_exempt
+def create_product_entry(request):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        cleaned_data = {key: strip_tags(value) for key, value in request.POST.items()}
+        form = ProductForm(cleaned_data, request.FILES)
+        if form.is_valid():
+            product = form.save()
+            return JsonResponse({'success': True, 'id': product.id, 'name': product.name})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def create_category(request):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        category_name = strip_tags(request.POST.get('name', ''))
+        form = CategoryForm({'name': category_name})
+        if form.is_valid():
+            category = form.save()
+            return JsonResponse({'success': True, 'id': category.id, 'name': category.name})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
 
 def serialize_data(request, model, fmt, id=None):
     if id:

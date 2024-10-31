@@ -367,7 +367,6 @@
 </div>
 
 <script>
-    // Categories slider functionality
     const categoriesSlider = document.querySelector('.categories-slider-inner');
     const prevBtn = document.querySelector('.prev');
     const nextBtn = document.querySelector('.next');
@@ -375,7 +374,7 @@
     let currentCategoryIndex = 0;
 
     function updateCategoryPosition() {
-        const slideAmount = categories[0].offsetWidth + 10; // Include margin
+        const slideAmount = categories[0].offsetWidth + 10; 
         categoriesSlider.style.transform = `translateX(${-currentCategoryIndex * slideAmount}px)`;
     }
 
@@ -393,7 +392,6 @@
         }
     });
 
-    // Category click functionality
     categories.forEach(category => {
         category.addEventListener('click', function() {
             categories.forEach(cat => cat.classList.remove('active'));
@@ -409,7 +407,6 @@
         });
     });
 
-    // Notification Bar Functionality
     const notificationBar = document.getElementById('notification-bar');
     const notificationMessage = document.getElementById('notification-message');
     let currentProductId = null;
@@ -450,7 +447,6 @@
 
     noButton.addEventListener('click', hideNotification);
 
-    // Add event listener to products
     const products = document.querySelectorAll('.product');
     products.forEach(product => {
         product.addEventListener('click', function() {
@@ -460,7 +456,6 @@
         });
     });
 
-    // CSRF Token helper function
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {

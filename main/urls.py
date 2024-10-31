@@ -16,7 +16,7 @@ urlpatterns = [
     path('edit-cart-item/<uuid:cart_item_id>/', views.edit_product, name='edit_cart_item'),
 
     path('account/product-entry/', views.create_product_entry, name='create_product_entry') ,
-    path('account/add-category/', views.create_category, name='create_category'),
+    path('create-category/', views.create_category, name='create_category'),
     path('account/', views.account_page, name='account'),
 
     path('product_json/', views.products_json, name='products_json'),

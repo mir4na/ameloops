@@ -4,6 +4,12 @@
 
 - Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
 
+# Tugas 6: JavaScript dan AJAX
+
+## Mengubah tugas 5 yang telah dibuat sebelumnya menjadi menggunakan AJAX.
+
+
+
 # Tugas 5: Desain Web menggunakan HTML, CSS dan Framework CSS
 
 ## Implementasikan fungsi untuk menghapus dan mengedit product.
