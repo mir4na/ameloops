@@ -231,8 +231,10 @@
         <p class="text-center">Add your wonderful product or category here!</p>
 
         <div class="button-container">
-            <button class="toggle-button" onclick="toggleForm('product-form')">Add Product</button>
-            <button class="toggle-button" onclick="toggleForm('category-form')">Add Category</button>
+            <button class="toggle-button" onclick="toggleForm('product-form')">Add Product (Non-AJAX)</button>
+            <button class="toggle-button" onclick="toggleForm('category-form')">Add Category (Non-AJAX)</button>
+            <button class="toggle-button" onclick="toggleForm('product-form-ajax')">Add Product (AJAX)</button>
+            <button class="toggle-button" onclick="toggleForm('category-form-ajax')">Add Category (AJAX)</button>
         </div>
 
         <div id="product-form" class="form-container">
@@ -257,6 +259,30 @@
                 <input type="submit" value="Add Category"/>
             </form>
         </div>
+
+        <div id="product-form-ajax" class="form-container">
+            <form id="productFormAjax" enctype="multipart/form-data">
+                {% csrf_token %}
+                <table>
+                    {{ form.as_table }}
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input type="submit" value="Add Product (AJAX)"/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        
+        <div id="category-form-ajax" class="form-container">
+            <form id="categoryFormAjax">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Enter new category name" required>
+                <input type="submit" value="Add Category (AJAX)"/>
+            </form>
+        </div>
+
     </div>
 </div>
 
@@ -264,8 +290,8 @@
 <script>
     function toggleForm(formId) {
         const forms = document.querySelectorAll('.form-container');
-        forms.forEach(form => form.classList.remove('active'));
-        document.getElementById(formId).classList.add('active');
+        forms.forEach(form => form.style.display = 'none');
+        document.getElementById(formId).style.display = 'block';
     }
 
     $(document).ready(function() {

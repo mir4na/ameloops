@@ -2,8 +2,9 @@
 - NPM: 2306208855
 - Kelas: PBP-F
 
-- Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
+- Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/) (500 Server Error)
 
+<<<<<<< HEAD
 # Tugas 6: JavaScript dan AJAX
 
 ## Mengubah tugas 5 yang telah dibuat sebelumnya menjadi menggunakan AJAX.
@@ -11,8 +12,284 @@
 
 
 # Tugas 5: Desain Web menggunakan HTML, CSS dan Framework CSS
+=======
+<details>
+   <summary><b>Tugas 6: JavaScript dan AJAX</b></summary>
+>>>>>>> beb8caab26ab5bbd3dd98e784c693ee8c63357b3
 
-## Implementasikan fungsi untuk menghapus dan mengedit product.
+## Jelaskan manfaat dari penggunaan JavaScript dalam pengembangan aplikasi web!
+
+JavaScript memiliki peran yang esensial dalam pengembangan aplikasi web karena dapat membuat elemen yang interaktif dan responsif, seperti validasi form secara real-time, galeri yang *dynamic*, serta pembaruan konten tanpa refresh ulang pada suatu page. Dengan dieksekusi di client-side, JavaScript mengurangi beban server dan meningkatkan performa aplikasi. Selain itu, Javascript mendukung multi-platform yang menjadikannya kompatibel di berbagai device dan browser, dengan lingkungan yang luas, seperti library dan framework seperti React dan Angular. Selain itu, dengan Node.js, JavaScript juga dapat digunakan untuk pengembangan full-stack, memungkinkan developer untuk bekerja secara efisien hanya dengan satu bahasa pemrograman.
+
+## Jelaskan fungsi dari penggunaan await ketika kita menggunakan fetch()! Apa yang akan terjadi jika kita tidak menggunakan await?
+
+Kita tahu bahwa fungsi asynchrous seperti fetch me-return nilai Promise. Promise pada Javascript merepresentasikan objek current value, future value, atau null. Ketika terdapat fungsi await pada code, maka code akan menunggu operasi yang dilakukan oleh fetch hingga selesai dan mendapatkan data dari responsenya. Setelah operasi fetch selesai dan program telah mendapatkan hasilnya, maka pada baris selanjutnya akan dieksekusi. Lalu, apa yang terjadi apabila tidak menggunakan await? Tentunya, baris selanjutnya pada code akan dieksekusi tanpa menunggu operasi pada fetch selesai sehingga hasil dari operasi fetch hanya berisikan Promise saja, bukan data response yang diinginkan. Akibatnya, kita tidak bisa menggunakan hasil dari operasi fetch tersebut karena variabelnya tidak berisi data response yang kita inginkan.
+
+## Mengapa kita perlu menggunakan decorator csrf_exempt pada view yang akan digunakan untuk AJAX POST?
+
+Ketika AJAX melakukan POST request, request tersebut biasanya harus menyertakan CSRF token yang diverifikasi oleh Django di server. Namun, jika tidak ada token yang valid atau jika AJAX request dikirim dari source yang tidak menyediakan CSRF token, maka Django akan memblokir request tersebut dan mengembalikan error "403 Forbidden". Maka dari itu, kita perlu memerlukan decorator csrf_exempt. Decorator csrf_exempt befungsi dalam menonaktifkan CSRF protection (Django memiliki CSRF protection) untuk view tertentu sehingga AJAX POST dapat diproses tanpa harus memverifikasi CSRF token.
+
+## Pada tutorial PBP minggu ini, pembersihan data input pengguna dilakukan di belakang (backend) juga. Mengapa hal tersebut tidak dilakukan di frontend saja?
+
+Pembersihan data input perlu dilakukan di backend karena validasi di frontend dapat dilewati atau dimanipulasi oleh user melalui cara seperti menonaktifkan JavaScript atau menggunakan tool seperti Postman. Oleh karena itu, backend harus memverifikasi ulang data agar sesuai dengan standar dan logika program yang berlaku. Selain itu, pembersihan di backend memastikan konsistensi data di berbagai interface, menangani validasi yang kompleks seperti pengecekan ke database, dan melindungi dari serangan berbahaya seperti SQL injection atau XSS. Meskipun validasi frontend memberikan response cepat untuk user, backend adalah lapisan terakhir yang menjamin data yang diproses benar-benar aman dan valid.
+
+## AJAX GET
+
+   1. Di sini, saya mengimplementasikan AJAX GET pada product yang telah ditambahkan pada cart. Pertama, pergi ke ```views.py``` yang ada pada direktori main.
+
+   2. Buatlah fungsi ```get_cart_data``` bertujuan untuk mengambil data keranjang belanja user yang sedang login dan mengembalikannya dalam format JSON.
+      ```
+      @login_required(login_url='/login')
+      def get_cart_data(request):
+          cart, created = Cart.objects.get_or_create(user=request.user)
+          cart_items = CartItem.objects.filter(cart=cart)
+          
+          total = sum(item.total_price for item in cart_items) if cart_items.exists() else 0
+          
+          cart_data = []
+          for item in cart_items:
+              cart_data.append({
+                  'id': str(item.id),
+                  'product_name': item.product.name,
+                  'product_price': item.product.price,
+                  'quantity': item.quantity,
+                  'total_price': item.total_price,
+                  'image_url': item.product.image.url if item.product.image else '',
+                  'stock': item.product.stock,
+              })
+          
+          return JsonResponse({
+              'cart_items': cart_data,
+              'total': total,
+          })
+      ```
+      Fungsi ini menggunakan dekorator ```@login_required``` untuk memastikan hanya user yang sudah login dapat mengaksesnya. Pertama, fungsi mencoba mendapatkan atau membuat objek ```Cart``` yang terkait dengan user, kemudian mengambil semua item yang ada di keranjang tersebut dari model ```CartItem```. Selanjutnya, total harga dihitung dengan menjumlahkan total harga dari semua item di keranjang, atau diinisialisasi dengan nilai 0 jika keranjang kosong. Data dari setiap item, termasuk ID, nama produk, harga satuan, jumlah, total harga, URL gambar, dan stok produk, dimasukkan ke dalam daftar ```cart_data```. Akhirnya, fungsi mengembalikan data berupa daftar item keranjang dan total harga dalam bentuk respons JSON, yang nantinya dapat digunakan oleh frontend untuk menampilkan atau memperbarui informasi keranjang belanja secara *dynamic*.
+      
+   3. Setelah membuat fungsinya pada ```views.py```, sekarang atur routing di ```urls.py```.
+      ```
+      ...
+      path('get-cart-data/', views.get_cart_data, name='get_cart_data'),
+      ...
+      ```
+
+   4. Setelah mengatur routing pada urls.py, sekarang implementasikan pada ```cart.html```.
+      ```
+      ...
+      async function fetchCartData() {
+          try {
+              console.log('Fetching cart data...');
+              const response = await fetch('{% url "main:get_cart_data" %}');
+              if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              const data = await response.json();
+              console.log('Received cart data:', data);
+              return data;
+          } catch (error) {
+              console.error('Error fetching cart data:', error);
+          }
+      }
+      ...
+      ```
+      Kode ini mendefinisikan fungsi fetchCartData sebagai fungsi asynchronous yang menggunakan keyword async, memungkinkan penggunaan await untuk menunggu penyelesaian Promise saat mengirim permintaan HTTP dengan fetch API ke URL yang ditentukan oleh ```{% url "main:get_cart_data" %}```. Setelah permintaan dikirim, respons akan diperiksa; jika tidak sukses (status code bukan 200–299), akan dilempar error. Jika berhasil, data akan diubah dari format JSON ke objek JavaScript menggunakan ```await response.json()``` dan disimpan dalam variabel data. Kemudian, hasilnya dicetak ke konsol dengan console.log, dan data dikembalikan untuk digunakan di bagian lain script, seperti di fungsi ```renderCartItems```. Jika terjadi kesalahan saat pengambilan data, blok catch akan menangani dan mencetak pesan kesalahan ke konsol.
+
+      ```
+      ...
+      document.addEventListener('DOMContentLoaded', async () => {
+          console.log('DOM fully loaded and parsed');
+          const cartData = await fetchCartData();
+          if (cartData) {
+              renderCartItems(cartData);
+          } else {
+              console.error('Failed to fetch cart data');
+          }
+      });
+      ...
+      ```
+      Saat DOM sudah sepenuhnya dimuat (DOMContentLoaded), fungsi ```fetchCartData()``` dipanggil untuk mengambil data keranjang. Jika berhasil, data keranjang yang diambil akan diteruskan ke fungsi renderCartItems(cartData) untuk ditampilkan di halaman. Namun jika gagal, pesan kesalahan akan dicetak di konsol dengan console.error.
+
+      ```
+      ...
+      function renderCartItems(cartData) {
+          const cartItemsContainer = document.getElementById('cart-items');
+          const cartTotalElement = document.getElementById('cart-total');
+          const emptyCartMessage = document.getElementById('empty-cart-message');
+      
+          if (cartData.cart_items.length === 0) {
+              // Menampilkan pesan jika keranjang kosong
+              cartItemsContainer.style.display = 'none';
+              cartTotalElement.style.display = 'none';
+              emptyCartMessage.style.display = 'block';
+          } else {
+              cartItemsContainer.style.display = 'flex';
+              cartTotalElement.style.display = 'block';
+              emptyCartMessage.style.display = 'none';
+      
+              cartItemsContainer.innerHTML = cartData.cart_items.map(item => `
+                  <div class="cart-item">
+                      <img src="${item.image_url}" alt="${item.product_name}" class="cart-item-image">
+                      <div class="cart-item-details">
+                          <div class="cart-item-name">${item.product_name}</div>
+                          <div class="cart-item-price">${rupiah_format(item.product_price)}</div>
+                      </div>
+                      <div class="cart-item-actions">
+                          <input type="number" name="quantity" value="${item.quantity}" min="1" max="${item.stock}" class="quantity-input" data-item-id="${item.id}">
+                          <button class="action-button update-quantity" data-item-id="${item.id}">Update</button>
+                          <button class="action-button remove-item" data-item-id="${item.id}">Remove</button>
+                      </div>
+                  </div>
+              `).join('');
+      
+              cartTotalElement.textContent = `Total: ${rupiah_format(cartData.total)}`;
+          }
+      }
+      ...
+      ```
+      Fungsi ini berfungsi dalam mengambil data keranjang (cartData) yang telah diambil oleh ```fetchCartData()``` dan kemudian merender item-item keranjang tersebut dalam elemen HTML. Jika keranjang kosong, pesan "Your cart is empty" akan ditampilkan.
+
+## AJAX POST
+
+   1. Pertama, pergi ke ```views.py``` dan buatlah dua fungsi yang bernama ```create_product_ajax``` dan ```create_category_ajax```.
+      ```
+      @csrf_exempt
+      @require_POST
+      def create_product_ajax(request):
+          if request.method == 'POST':
+              cleaned_data = {key: strip_tags(value) for key, value in request.POST.items()}
+              form = ProductForm(cleaned_data, request.FILES)
+              if form.is_valid():
+                  product = form.save()
+                  return JsonResponse({
+                      "status": "success",
+                      "message": "Product added successfully",
+                      "product": serializers.serialize('json', [product])[1:-1]
+                  }, status=200)
+              else:
+                  return JsonResponse({"status": "error", "message": str(form.errors)}, status=400)
+          return JsonResponse({"status": "error", "message": "Invalid method"}, status=405)
+      
+      @csrf_exempt
+      @require_POST
+      def create_category_ajax(request):
+          if request.method == 'POST':
+              cleaned_data = {key: strip_tags(value) for key, value in request.POST.items()}
+              form = CategoryForm(cleaned_data)
+              if form.is_valid():
+                  category = form.save()
+                  return JsonResponse({
+                      "status": "success",
+                      "message": "Category added successfully",
+                      "category": serializers.serialize('json', [category])[1:-1]
+                  }, status=200)
+              else:
+                  return JsonResponse({"status": "error", "message": str(form.errors)}, status=400)
+          return JsonResponse({"status": "error", "message": "Invalid method"}, status=405)
+      ```
+      Fungsi ```create_product_ajax``` dan ```create_category_ajax``` adalah view Django yang menangani permintaan POST untuk membuat produk dan kategori baru melalui AJAX. Kedua fungsi ini menggunakan decorator @csrf_exempt untuk mengizinkan permintaan tanpa token CSRF dan @require_POST untuk memastikan hanya metode POST yang dapat mengaksesnya. Setelah menerima permintaan POST, data input dibersihkan dari tag HTML menggunakan ```strip_tags```, dan kemudian divalidasi dengan form Django (ProductForm atau CategoryForm). Jika valid, objek baru disimpan ke database dan data tersebut diserialisasi menjadi JSON untuk dikembalikan sebagai respons sukses dengan status 200. Jika form tidak valid, respons JSON dengan pesan error dan status 400 dikirim. Untuk permintaan selain POST, fungsi mengembalikan respons dengan status 405 (Method Not Allowed).
+
+   2. Setelah membuat kedua fungsi tersebut, atur routingnya pada ```urls.py```.
+      ```
+      ...
+      path('create-product-ajax/', views.create_product_ajax, name='create_product_ajax'),
+      path('create-category-ajax/', views.create_category_ajax, name='create_category_ajax'),
+      ...
+      ```
+
+   3. Setelah pengaturan routing, sekarang implementasikan kedua fungsi yang telah dibuat pada ```account.html``` (HTML yang berfungsi untuk menambahkan product dan category).
+      ```
+      <div class="button-container">
+          ...
+          <button class="toggle-button" onclick="toggleForm('product-form-ajax')">Add Product (AJAX)</button>
+          <button class="toggle-button" onclick="toggleForm('category-form-ajax')">Add Category (AJAX)</button>
+      </div>
+      ```
+      Pada bagian ini, tambahkan button untuk menggunakan form yang dikirimkan melalui AJAX.
+
+      ```
+      ...
+      <div id="product-form-ajax" class="form-container">
+          <form id="productFormAjax" enctype="multipart/form-data">
+              {% csrf_token %}
+              <table>
+                  {{ form.as_table }}
+                  <tr>
+                      <td></td>
+                      <td><input type="submit" value="Add Product (AJAX)"/></td>
+                  </tr>
+              </table>
+          </form>
+      </div>
+
+      <div id="category-form-ajax" class="form-container">
+          <form id="categoryFormAjax">
+              {% csrf_token %}
+              <input type="text" name="name" placeholder="Enter new category name" required>
+              <input type="submit" value="Add Category (AJAX)"/>
+          </form>
+      </div>
+      ...
+      ```
+      Ini adalah form yang menggunakan AJAX untuk mengirim data secara asynchronous tanpa perlu me-refresh halaman. AJAX di sini menangani form produk dan kategori dengan event submit.
+
+      ```
+      document.getElementById('productFormAjax').addEventListener('submit', async function(e) {
+          e.preventDefault();  // Mencegah reload halaman
+          const formData = new FormData(this);
+          try {
+              const response = await fetch("{% url 'main:create_product_ajax' %}", {
+                  method: 'POST',
+                  body: formData
+              });
+              const data = await response.json();
+              if (data.status === 'success') {
+                  alert('Product added successfully!');
+                  this.reset();
+         ...
+      });
+      ```
+      ```
+      document.getElementById('categoryFormAjax').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          try {
+              const response = await fetch("{% url 'main:create_category_ajax' %}", {
+                  method: 'POST',
+                  body: formData
+              });
+              const data = await response.json();
+              if (data.status === 'success') {
+                  alert('Category added successfully!');
+                  this.reset();
+         ...
+      });
+      ```
+      Pada bagian ini menggunakan ```fetch()``` untuk mengirimkan data form secara asynchronous ke URL endpoint yang diatur pada backend (misalnya create_product_ajax dan create_category_ajax). Respons dari server diharapkan dalam format JSON, dan jika berhasil (data.status === 'success'), user akan mendapat notifikasi bahwa data telah ditambahkan.
+
+   4. Lakukan sanitasi pada input untuk mencegah serangan XSS dengan menggunakan ```DOMPurify```.
+      ```
+      if (data.status === 'success') {
+          alert('Product added successfully!');
+          this.reset();
+      } else {
+          alert(DOMPurify.sanitize(JSON.stringify("please don't hack me :(")));
+      }
+      ```
+      ```
+      if (data.status === 'success') {
+          alert('Category added successfully!');
+          this.reset();
+      } else {
+          alert(DOMPurify.sanitize(JSON.stringify("please don't hack me :(")));
+      }
+      ```
+      ```DOMPurify``` digunakan untuk memastikan bahwa pesan atau input yang dimasukkan akan dibersihkan dari potensi script berbahaya sebelum ditampilkan di browser. Dengan menggunakan ```DOMPurify```, input field tersebut akan disanitasi untuk menghindari eksekusi kode JavaScript yang tidak diinginkan atau serangan XSS dari data yang mungkin berasal dari user yang tidak sah.
+      
+</details>
+
+<details>
+   <summary><b>Tugas 5: Desain Web menggunakan HTML, CSS dan Framework CSS</b></summary>
+   
+   ## Implementasikan fungsi untuk menghapus dan mengedit product.
 
    1. Pergi ke ```models.py``` pada direktori ```main```.
 
@@ -145,7 +422,7 @@
       ...
       ```
       Jika kondisi di dalam ```{% if cart_items %}``` tidak terpenuhi (artinya tidak ada item dalam keranjang), maka bagian di dalam ```{% else %}``` akan dieksekusi. Di sini, terdapat sebuah div dengan class ```empty-cart-message```, yang berisi elemen paragraf ```<p>``` yang menampilkan pesan "Your cart is empty." 
-      - ![image](https://github.com/user-attachments/assets/e59db246-63f3-4b4a-b5f7-ee7ffbb22c21)
+      - ![image](https://github.com/user-attachments/assets/55b45fcc-1edc-47ca-bf4d-fa3d1321ae01)
 
       Ketika terdapat item yang telah ditambahkan pada cart.
       ```
@@ -302,8 +579,12 @@ Contoh app yang belum menerapkan responsive design: Pacil Web Service
   
 2. - Grid Layout: Grid Layout adalah sistem tata letak dua dimensi yang memungkinkan pengembang untuk mengatur elemen dalam baris dan kolom sekaligus. Dengan menggunakan properti seperti ```grid-template-columns```, ```grid-template-rows```, dan ```grid-area```, kita dapat menciptakan tata letak yang lebih terstruktur dan kompleks.
    - Kegunaan: Grid Layout sangat baik untuk membuat desain yang lebih rumit dan terorganisir, seperti tata letak halaman web, galeri foto, atau dashboard. Selain itu, Grid memberikan kontrol yang lebih besar terhadap penempatan elemen, memungkinkan pengembang menentukan ukuran dan posisi elemen dengan lebih akurat.
+</details>
 
-# Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django
+<details>
+   <summary><b>Tugas 4: Implementasi Autentikasi, Session, dan Cookies pada Django</b></summary>
+
+## Mengimplementasikan fungsi registrasi, login, dan logout untuk memungkinkan pengguna untuk mengakses aplikasi sebelumnya dengan lancar.
 
    1. Aktifkan virtual environment, lalu pergi ke ```views.py``` pada direktori ```main```.
       
@@ -649,8 +930,10 @@ Contoh app yang belum menerapkan responsive design: Pacil Web Service
    
    Berikut skema mengenai serangan XSS:
    ![image](https://github.com/user-attachments/assets/cbb1d7f2-2b92-4575-8d7e-4e407512f95a)
+</details>
 
-# Tugas 3: Implementasi Form dan Data Delivery pada Django
+<details>
+   <summary><b>Tugas 3: Implementasi Form dan Data Delivery pada Django</b></summary>
 
 Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-poin dalam checklist:
 
@@ -856,11 +1139,12 @@ Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-
    1. Lakukan command ```git add .``` pada terminal. Command ini berfungsi untuk menyimpan semua perubahan pada file ke staging area.
    2. Setelah itu, lakukan command ```git commit -m [message]```. Command ini berfungsi untuk menyimpan commit ke staging area disertai dengan adanya pesan singkat yang deskriptif.
    3. Lalu, lakukan command ```git push -u origin [nama branch]```. Command ini berfungsi untuk mengirim(push) perubahan dari branch lokal ke remote repository yang bernama origin. 
+</details>
 
+<details>
+   <summary><b>Tugas 2: Pengenalan Aplikasi Django dan Model-View-Template (MVT) pada Django</b></summary>
 
-# Tugas 2: Pengenalan Aplikasi Django dan Model-View-Template (MVT) pada Django
-
-Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-poin dalam checklist:
+   Berikut adalah langkah-langkah yang saya lakukan untuk mengimplementasikan poin-poin dalam checklist:
 
 ## Membuat proyek Django baru
    1. Buat atau cari suatu direktori sebagai tempat untuk mengembangkan proyek.
@@ -1111,3 +1395,5 @@ book_to_delete = Book.objects.get(id=2)
 book_to_delete.delete()
 ```
 ---
+
+</details>

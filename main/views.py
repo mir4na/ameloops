@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.core import serializers
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import *
@@ -78,12 +79,26 @@ def cart_page(request):
     
     total = sum(item.total_price for item in cart_items) if cart_items.exists() else 0
     
-    context = {
-        'cart_items': cart_items,
+    cart_data = []
+    for item in cart_items:
+        cart_data.append({
+            'id': str(item.id),
+            'product_name': item.product.name,
+            'product_price': item.product.price,
+            'quantity': item.quantity,
+            'total_price': item.total_price,
+            'image_url': item.product.image.url if item.product.image else '',
+            'stock': item.product.stock,
+        })
+    
+    return JsonResponse({
+        'cart_items': cart_data,
         'total': total,
-    }
-    return render(request, 'cart.html', context)
+    })
 
+@login_required(login_url='/login')
+def cart_page(request):
+    return render(request, 'cart.html')
 
 @require_POST
 @login_required(login_url='/login')
@@ -174,6 +189,40 @@ def create_category(request):
             return JsonResponse({'success': True, 'id': category.id, 'name': category.name})
         else:
             return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+@csrf_exempt
+@require_POST
+def create_product_ajax(request):
+    if request.method == 'POST':
+        cleaned_data = {key: strip_tags(value) for key, value in request.POST.items()}
+        form = ProductForm(cleaned_data, request.FILES)
+        if form.is_valid():
+            product = form.save()
+            return JsonResponse({
+                "status": "success",
+                "message": "Product added successfully",
+                "product": serializers.serialize('json', [product])[1:-1]
+            }, status=200)
+        else:
+            return JsonResponse({"status": "error", "message": str(form.errors)}, status=400)
+    return JsonResponse({"status": "error", "message": "Invalid method"}, status=405)
+
+@csrf_exempt
+@require_POST
+def create_category_ajax(request):
+    if request.method == 'POST':
+        cleaned_data = {key: strip_tags(value) for key, value in request.POST.items()}
+        form = CategoryForm(cleaned_data)
+        if form.is_valid():
+            category = form.save()
+            return JsonResponse({
+                "status": "success",
+                "message": "Category added successfully",
+                "category": serializers.serialize('json', [category])[1:-1]
+            }, status=200)
+        else:
+            return JsonResponse({"status": "error", "message": str(form.errors)}, status=400)
+    return JsonResponse({"status": "error", "message": "Invalid method"}, status=405)
 
 def serialize_data(request, model, fmt, id=None):
     if id:
