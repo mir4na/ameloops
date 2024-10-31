@@ -161,38 +161,16 @@
     <div class="cart-container">
         <h1 class="cart-title">Shopping Cart</h1>
         
-        {% if cart_items %}
-            <div class="cart-items">
-                {% for item in cart_items %}
-                <div class="cart-item">
-                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-image">
-                    <div class="cart-item-details">
-                        <div class="cart-item-name">{{ item.product.name }}</div>
-                        <div class="cart-item-price">{{ item.product.price|rupiah_format }}</div>
-                    </div>
-                    <div class="cart-item-actions">
-                        <form method="post" action="{% url 'main:edit_cart_item' item.id %}">
-                            {% csrf_token %}
-                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="quantity-input">
-                            <button type="submit" class="action-button">Update</button>
-                        </form>
-                        <form method="post" action="{% url 'main:remove_from_cart' item.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="action-button">Remove</button>
-                        </form>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <div class="cart-total">
-                Total: {{ total|rupiah_format }}
-            </div>
-        {% else %}
-            <div class="empty-cart-message">
-                <p>Your cart is empty.</p>
-                <img src="{% static 'img/shocked.png' %}" class="template" >
-            </div>
-        {% endif %}
+        <div id="cart-items" class="cart-items">
+        </div>
+        
+        <div id="cart-total" class="cart-total">
+        </div>
+        
+        <div id="empty-cart-message" class="empty-cart-message" style="display: none;">
+            <p>Your cart is empty.</p>
+            <img src="{% static 'img/shocked.png' %}" class="template">
+        </div>
     </div>
 </div>
 
@@ -246,7 +224,6 @@
                     </div>
                 </div>
             `).join('');
-
             cartTotalElement.textContent = `Total: ${rupiah_format(cartData.total)}`;
         }
     }
