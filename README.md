@@ -2,7 +2,7 @@
 - NPM: 2306208855
 - Kelas: PBP-F
 
-- Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/) (500 Server Error)
+- Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
 
 <details>
    <summary><b>Tugas 6</b></summary>
