@@ -4,19 +4,6 @@
 
 - Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/) (500 Server Error)
 
-<<<<<<< HEAD
-# Tugas 6: JavaScript dan AJAX
-
-## Mengubah tugas 5 yang telah dibuat sebelumnya menjadi menggunakan AJAX.
-
-
-
-# Tugas 5: Desain Web menggunakan HTML, CSS dan Framework CSS
-=======
-<details>
-   <summary><b>Tugas 6: JavaScript dan AJAX</b></summary>
->>>>>>> beb8caab26ab5bbd3dd98e784c693ee8c63357b3
-
 ## Jelaskan manfaat dari penggunaan JavaScript dalam pengembangan aplikasi web!
 
 JavaScript memiliki peran yang esensial dalam pengembangan aplikasi web karena dapat membuat elemen yang interaktif dan responsif, seperti validasi form secara real-time, galeri yang *dynamic*, serta pembaruan konten tanpa refresh ulang pada suatu page. Dengan dieksekusi di client-side, JavaScript mengurangi beban server dan meningkatkan performa aplikasi. Selain itu, Javascript mendukung multi-platform yang menjadikannya kompatibel di berbagai device dan browser, dengan lingkungan yang luas, seperti library dan framework seperti React dan Angular. Selain itu, dengan Node.js, JavaScript juga dapat digunakan untuk pengembangan full-stack, memungkinkan developer untuk bekerja secara efisien hanya dengan satu bahasa pemrograman.
