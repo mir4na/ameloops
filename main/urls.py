@@ -11,14 +11,9 @@ urlpatterns = [
     path('products/', views.products_page, name='products'),
 
     path('cart/', views.cart_page, name='cart'),
-    # path('get-cart-data/', views.get_cart_data, name='get_cart_data'),
-    
     path('add-to-cart/<uuid:product_id>/', views.add_to_cart, name='add_to_cart'),
     path('remove-from-cart/<uuid:cart_item_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('edit-cart-item/<uuid:cart_item_id>/', views.edit_product, name='edit_cart_item'),
-
-    path('create-product-ajax/', views.create_product_ajax, name='create_product_ajax'),
-    path('create-category-ajax/', views.create_category_ajax, name='create_category_ajax'),
 
     path('account/product-entry/', views.create_product_entry, name='create_product_entry') ,
     path('create-category/', views.create_category, name='create_category'),
