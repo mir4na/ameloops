@@ -4,6 +4,7 @@
 
 - Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
 
+<<<<<<< HEAD
 <details>
    <summary><b>Tugas 6</b></summary>
 
@@ -14,6 +15,9 @@ JavaScript memiliki peran yang esensial dalam pengembangan aplikasi web karena d
 ## Jelaskan fungsi dari penggunaan await ketika kita menggunakan fetch()! Apa yang akan terjadi jika kita tidak menggunakan await?
 
 Kita tahu bahwa fungsi asynchrous seperti fetch me-return nilai Promise. Promise pada Javascript merepresentasikan objek current value, future value, atau null. Ketika terdapat fungsi await pada code, maka code akan menunggu operasi yang dilakukan oleh fetch hingga selesai dan mendapatkan data dari responsenya. Setelah operasi fetch selesai dan program telah mendapatkan hasilnya, maka pada baris selanjutnya akan dieksekusi. Lalu, apa yang terjadi apabila tidak menggunakan await? Tentunya, baris selanjutnya pada code akan dieksekusi tanpa menunggu operasi pada fetch selesai sehingga hasil dari operasi fetch hanya berisikan Promise saja, bukan data response yang diinginkan. Akibatnya, kita tidak bisa menggunakan hasil dari operasi fetch tersebut karena variabelnya tidak berisi data response yang kita inginkan.
+=======
+# Tugas 5: Desain Web menggunakan HTML, CSS dan Framework CSS
+>>>>>>> parent of 8b61cd7 (checking only)
 
 ## Mengapa kita perlu menggunakan decorator csrf_exempt pada view yang akan digunakan untuk AJAX POST?
 

@@ -236,7 +236,7 @@
         </div>
 
         <div id="product-form" class="form-container">
-            <form id="productForm" method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <table>
                     {{ form.as_table }}
@@ -253,7 +253,7 @@
         <div id="category-form" class="form-container">
             <form method="POST" class="category-form">
                 {% csrf_token %}
-                <input type="text" name="name" placeholder="Enter new category name" required>
+                <input type="text" name="category_name" placeholder="Enter new category name" required>
                 <input type="submit" value="Add Category"/>
             </form>
         </div>

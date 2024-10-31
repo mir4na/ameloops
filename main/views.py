@@ -7,11 +7,9 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import *
-from django.utils.html import strip_tags
+from django.views.decorators.http import require_POST
 import datetime
 from django.http import HttpResponseRedirect
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.urls import reverse
 
 def show_main(request):
@@ -90,6 +88,7 @@ def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart, created = Cart.objects.get_or_create(user=request.user)
     cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
+
     return JsonResponse({'status': 'success', 'message': f'{product.name} added to cart'})
 
 @login_required(login_url='/login')
@@ -113,22 +112,12 @@ def account_page(request):
     }
     return render(request, 'account.html', context)
 
-@require_POST
-@csrf_protect
 @login_required(login_url='/login')
 def remove_from_cart(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
     cart_item.delete()
-    cart = Cart.objects.get(user=request.user)
-    total = sum(item.total_price for item in CartItem.objects.filter(cart=cart))
-    return JsonResponse({
-        'status': 'success', 
-        'message': 'Item removed from cart', 
-        'total': total,
-    })
+    return HttpResponseRedirect(reverse('main:cart'))
 
-@require_POST
-@csrf_protect
 @login_required(login_url='/login')
 def edit_product(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__user=request.user)
