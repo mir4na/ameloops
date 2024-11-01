@@ -2,7 +2,7 @@
 - NPM: 2306208855
 - Kelas: PBP-F
 
-- Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
+- Link deploy: [click here!](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/) PWS fixed!
 
 <details>
    <summary><b>Tugas 6: JavaScript dan AJAX</b></summary>
