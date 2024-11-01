@@ -2,7 +2,7 @@
 - NPM: 2306208855
 - Kelas: PBP-F
 
-- Link deploy: [open this through incognito, ensure the protocol is http](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
+- Link deploy: [open this through incognito, ensure the protocol is http.](http://muhammad-afwan-ameloops.pbp.cs.ui.ac.id/)
 
 <details>
    <summary><b>Tugas 6: JavaScript dan AJAX</b></summary>
